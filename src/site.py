@@ -4,20 +4,26 @@ Gera docs/index.html (pt) e docs/en/index.html (en). Sem framework e sem
 build: o Pages serve o arquivo como está.
 
 Decisões de visualização:
-- Identidade editorial: superfície de papel (creme #faf8f3, cartões #fffdf8),
-  hairlines, escala tipográfica generosa. O objetivo é ler como relatório
-  impresso, não como painel de corretora.
+- Estrutura em duas faixas: uma barra escura fixa à esquerda, com os
+  indicadores macro sempre à vista, e o boletim rolando à direita. Layout
+  assimétrico de propósito — coluna única centralizada achata a hierarquia.
+- Contraste real entre superfícies: barra grafite, conteúdo em papel, tabelas
+  e análise recortadas em branco puro. Blocos quase da mesma cor viram uma
+  mancha só, sem estrutura legível.
 - Tema claro apenas. Sem modo escuro automático, por escolha de design.
-- Alta/baixa é *estado*, não identidade, então usa a paleta de status
-  (verde #0ca30c / vermelho #d03b3b), revalidada contra a superfície creme:
-  ΔE de daltonismo 12,4 e contraste ≥ 3:1 em ambos os planos.
-- A cor nunca carrega o sinal sozinha: toda variação vem com seta e número,
-  que é a codificação secundária exigida quando o ΔE fica perto do piso.
-- Sem serifa, mesmo no registro editorial — o efeito vem de espaçamento,
-  hairlines e escala, não de um tipo decorativo.
+- Alta/baixa é *estado*, não identidade, então usa a paleta de status. Como o
+  mesmo sinal aparece sobre dois fundos, cada um tem seu par:
+    · sobre papel/branco: #005c00 e #a32b2b (contraste 7,8 e 6,7)
+    · sobre a barra escura: #0ca30c e #ef6f6f (contraste 5,1 e 5,8)
+  O vermelho escuro foi clareado na barra porque #d03b3b rende só 3,5 ali —
+  reprovado para texto pequeno. O par da barra fica acima da faixa de
+  luminosidade exigida de *marcas*, o que é correto: ali ele é texto, e a
+  régua de texto é a de contraste WCAG. Nenhum sparkline é desenhado na barra.
+- A cor nunca carrega o sinal sozinha: toda variação vem com seta e número.
+- Sem serifa — o registro editorial vem de espaçamento, fios e escala.
 - Sparklines têm uma série só, portanto não levam legenda nem rótulo por
-  ponto — o valor de cada dia fica na própria tabela.
-- O boletim inteiro já é a "table view" acessível dos gráficos.
+  ponto; o valor de cada dia está na própria tabela, que é a versão
+  acessível do gráfico.
 """
 
 import html
@@ -87,119 +93,132 @@ TEXTOS = {
 CSS = """
 *,*::before,*::after{box-sizing:border-box}
 :root{
-  --paper:#faf8f3;        /* plano da página */
-  --card:#fffdf8;         /* superfície dos blocos */
-  --ink:#1a1814;          /* tinta primária */
-  --ink-2:#57503f;        /* tinta secundária */
-  --muted:#8a8172;        /* rótulos e eixos */
-  --rule:#e8e2d6;         /* hairline */
-  --rule-forte:#d6cdba;   /* fio do cabeçalho */
-  --up:#005c00;    --up-mark:#0ca30c;
-  --down:#a32b2b;  --down-mark:#d03b3b;
+  /* barra escura */
+  --side:#1f1c17; --side-ink:#fff; --side-ink-2:#c6bdab; --side-muted:#a39a8a;
+  --side-rule:rgba(255,255,255,.13);
+  --side-up:#0ca30c; --side-down:#ef6f6f;
+  /* conteúdo */
+  --paper:#f3efe5; --card:#fff;
+  --ink:#1a1814; --ink-2:#4d4639; --muted:#6e6657;
+  --rule:#e0d8c7; --rule-forte:#cbc0a9;
+  --up:#005c00; --down:#a32b2b;
+  --up-mark:#0ca30c; --down-mark:#d03b3b;
+  --destaque:#eae2cf;
 }
+html,body{margin:0; padding:0}
 body{
-  margin:0; background:var(--paper); color:var(--ink);
+  background:var(--paper); color:var(--ink);
   font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-  line-height:1.65; -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
+  line-height:1.6; -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:860px; margin:0 auto; padding:0 24px 80px}
 a{color:inherit}
 
-/* --- masthead: fio duplo, como cabeçalho de jornal --- */
-.masthead{border-bottom:3px double var(--rule-forte); padding:40px 0 18px;
-  margin-bottom:30px; display:flex; justify-content:space-between;
-  align-items:flex-end; gap:20px; flex-wrap:wrap}
-h1{font-size:1.75rem; line-height:1.15; margin:0 0 6px; font-weight:700;
-  letter-spacing:-.025em}
-.sub{color:var(--muted); font-size:.8rem; margin:0; letter-spacing:.02em}
-.lang{font-size:.76rem; text-decoration:none; color:var(--ink-2);
-  border-bottom:1px solid var(--rule-forte); padding-bottom:2px;
-  white-space:nowrap; letter-spacing:.03em}
-.lang:hover{color:var(--ink); border-color:var(--ink)}
+.shell{display:flex; align-items:flex-start; min-height:100vh}
 
-/* --- lide --- */
-.hero{margin-bottom:38px}
-.hero .manchete{font-size:1.85rem; line-height:1.22; font-weight:680;
-  letter-spacing:-.03em; margin:0 0 14px; max-width:26ch}
-.hero .resumo{color:var(--ink-2); margin:0; font-size:1.06rem; max-width:62ch}
-.placar{margin-top:18px; padding-top:13px; border-top:1px solid var(--rule);
-  color:var(--muted); font-size:.78rem; font-variant-numeric:tabular-nums;
-  letter-spacing:.02em}
-
-h2{font-size:.7rem; text-transform:uppercase; letter-spacing:.14em;
-  color:var(--muted); font-weight:600; margin:42px 0 14px;
-  padding-bottom:7px; border-bottom:1px solid var(--rule)}
-
-/* --- indicadores macro --- */
-.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
-  gap:0; border:1px solid var(--rule); background:var(--card)}
-.tile{padding:18px 20px; border-right:1px solid var(--rule)}
-.tile:last-child{border-right:none}
-.tile .rot{color:var(--muted); font-size:.71rem; margin-bottom:7px;
-  text-transform:uppercase; letter-spacing:.07em}
-.tile .val{font-size:1.7rem; font-weight:600; letter-spacing:-.03em;
-  line-height:1.1}
-.tile .un{font-size:.78rem; color:var(--muted); font-weight:400; margin-left:4px;
-  letter-spacing:0}
-.tile .delta{font-size:.79rem; margin-top:6px; font-variant-numeric:tabular-nums}
-.tile .ref{color:var(--muted); font-size:.66rem; margin-top:9px;
+/* ---------------- barra lateral ---------------- */
+.side{
+  width:272px; flex:0 0 272px; background:var(--side); color:var(--side-ink);
+  position:sticky; top:0; max-height:100vh; overflow-y:auto;
+  padding:30px 24px 26px; align-self:stretch;
+}
+.side h1{font-size:1.1rem; line-height:1.25; margin:0 0 6px; font-weight:650;
+  letter-spacing:-.015em}
+.side .data{color:var(--side-ink-2); font-size:.76rem; margin:0 0 20px;
   font-variant-numeric:tabular-nums}
+.side .lang{display:inline-block; font-size:.71rem; text-decoration:none;
+  color:var(--side-ink-2); border:1px solid var(--side-rule);
+  padding:5px 11px; letter-spacing:.04em}
+.side .lang:hover{color:var(--side-ink); border-color:var(--side-muted)}
 
-/* --- tabela --- */
-.tbl-wrap{border:1px solid var(--rule); background:var(--card); overflow-x:auto}
-table{width:100%; border-collapse:collapse; font-size:.87rem; min-width:580px}
-th{text-align:right; font-weight:600; font-size:.66rem; text-transform:uppercase;
-  letter-spacing:.09em; color:var(--muted); padding:13px 16px;
-  border-bottom:1px solid var(--rule-forte); white-space:nowrap}
+.metrics{margin-top:26px; border-top:1px solid var(--side-rule)}
+.metric{padding:15px 0; border-bottom:1px solid var(--side-rule)}
+.metric .rot{color:var(--side-muted); font-size:.65rem; text-transform:uppercase;
+  letter-spacing:.11em; margin-bottom:5px}
+.metric .val{font-size:1.42rem; font-weight:600; letter-spacing:-.025em;
+  line-height:1.1; color:var(--side-ink)}
+.metric .un{font-size:.72rem; color:var(--side-ink-2); font-weight:400;
+  margin-left:4px; letter-spacing:0}
+.metric .delta{font-size:.76rem; margin-top:4px;
+  font-variant-numeric:tabular-nums}
+.metric .ref{color:var(--side-muted); font-size:.63rem; margin-top:5px;
+  font-variant-numeric:tabular-nums}
+.s-up{color:var(--side-up)} .s-down{color:var(--side-down)}
+.s-flat{color:var(--side-muted)}
+.side .placar{margin-top:18px; color:var(--side-muted); font-size:.71rem;
+  line-height:1.6; font-variant-numeric:tabular-nums}
+
+/* ---------------- conteúdo ---------------- */
+.content{flex:1 1 auto; min-width:0; padding:46px 48px 64px; max-width:1100px}
+
+.lede{margin-bottom:44px}
+.lede .manchete{font-size:2.1rem; line-height:1.14; font-weight:680;
+  letter-spacing:-.035em; margin:0 0 16px; max-width:20ch}
+.lede .resumo{color:var(--ink-2); margin:0; font-size:1.08rem; max-width:64ch}
+
+h2{font-size:.68rem; text-transform:uppercase; letter-spacing:.15em;
+  color:var(--muted); font-weight:650; margin:0 0 13px}
+section{margin-bottom:42px}
+
+/* tabela em branco puro, recortada sobre o papel */
+.tbl-wrap{background:var(--card); border:1px solid var(--rule); overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:.87rem; min-width:600px}
+th{text-align:right; font-weight:650; font-size:.64rem; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--muted); padding:14px 18px;
+  border-bottom:1.5px solid var(--rule-forte); white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
 th:last-child,td:last-child{text-align:center}
-td{padding:12px 16px; border-bottom:1px solid var(--rule); text-align:right;
+td{padding:13px 18px; border-bottom:1px solid var(--rule); text-align:right;
   font-variant-numeric:tabular-nums; white-space:nowrap}
-tr:last-child td{border-bottom:none}
+tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:var(--paper)}
-.ativo{font-weight:550; letter-spacing:-.005em}
+.ativo{font-weight:550}
 .un-cell{color:var(--muted); font-size:.72rem; font-weight:400; margin-left:5px}
 .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
 .spark{display:block; margin:0 auto}
 
-/* --- destaques --- */
-ul.lista{list-style:none; padding:0; margin:0; border:1px solid var(--rule);
-  background:var(--card)}
-ul.lista li{padding:13px 20px; border-bottom:1px solid var(--rule);
-  font-size:.89rem; font-variant-numeric:tabular-nums}
-ul.lista li:last-child{border-bottom:none}
-ul.lista li::before{content:"—"; color:var(--muted); margin-right:12px}
-
-/* --- análise: coluna de leitura --- */
-.analise{border-left:2px solid var(--rule-forte); padding:2px 0 2px 24px}
-.analise p{margin:0 0 16px; font-size:1rem; max-width:66ch; color:var(--ink-2)}
-.analise p:first-child{color:var(--ink)}
+/* análise em branco, largura de leitura */
+.analise{background:var(--card); border:1px solid var(--rule); padding:28px 32px}
+.analise p{margin:0 0 15px; font-size:1rem; max-width:68ch; color:var(--ink-2)}
+.analise p:first-child{color:var(--ink); font-size:1.04rem}
 .analise p:last-child{margin-bottom:0}
 
-/* --- notícias --- */
-.news{list-style:none; padding:0; margin:0; border-top:1px solid var(--rule)}
-.news li{padding:14px 0; border-bottom:1px solid var(--rule)}
-.news a{text-decoration:none; font-size:.93rem; font-weight:500;
-  line-height:1.4; display:inline-block}
+/* destaques: bloco de cor, peso visual diferente */
+ul.lista{list-style:none; padding:6px 0; margin:0; background:var(--destaque);
+  border:1px solid var(--rule-forte)}
+ul.lista li{padding:9px 22px; font-size:.88rem;
+  font-variant-numeric:tabular-nums; display:flex; gap:12px}
+/* --muted rende só 4,40 sobre o bege do bloco; --ink-2 recupera a margem. */
+ul.lista li::before{content:"—"; color:var(--ink-2); flex:0 0 auto}
+
+/* notícias em duas colunas, sem caixas */
+.news{list-style:none; padding:0; margin:0; columns:2; column-gap:40px}
+.news li{padding:0 0 16px; break-inside:avoid; margin-bottom:16px;
+  border-bottom:1px solid var(--rule)}
+.news a{text-decoration:none; font-size:.91rem; font-weight:500; line-height:1.45}
 .news a:hover{text-decoration:underline; text-underline-offset:3px}
-.news .meta{color:var(--muted); font-size:.7rem; margin-top:5px;
-  text-transform:uppercase; letter-spacing:.06em}
+.news .meta{color:var(--muted); font-size:.68rem; margin-top:5px;
+  text-transform:uppercase; letter-spacing:.07em}
 
-footer{margin-top:52px; padding-top:22px; border-top:3px double var(--rule-forte);
-  color:var(--muted); font-size:.74rem; line-height:1.7}
-footer p{margin:0 0 7px}
-footer strong{color:var(--ink-2); font-weight:600}
-.aviso{font-style:italic; opacity:.9; margin-top:12px}
-.vazio{color:var(--muted); font-size:.87rem; padding:20px;
-  background:var(--card); border:1px solid var(--rule)}
+footer{margin-top:52px; padding-top:20px; border-top:1.5px solid var(--rule-forte);
+  color:var(--muted); font-size:.73rem; line-height:1.7; max-width:72ch}
+footer p{margin:0 0 6px}
+footer strong{color:var(--ink-2); font-weight:650}
+.aviso{font-style:italic; margin-top:11px}
+.vazio{color:var(--muted); font-size:.87rem; padding:20px; background:var(--card);
+  border:1px solid var(--rule)}
 
-@media (max-width:620px){
-  .wrap{padding:0 18px 56px}
-  h1{font-size:1.4rem}
-  .hero .manchete{font-size:1.45rem; max-width:none}
-  .tile{border-right:none; border-bottom:1px solid var(--rule)}
-  .tile:last-child{border-bottom:none}
+@media (max-width:900px){
+  .news{columns:1}
+  .content{padding:34px 28px 52px}
+}
+@media (max-width:700px){
+  .shell{display:block}
+  .side{width:auto; flex:none; position:static; max-height:none;
+    padding:24px 22px}
+  .metrics{display:grid; grid-template-columns:1fr 1fr; gap:0 22px;
+    border-top:1px solid var(--side-rule)}
+  .content{padding:30px 22px 48px}
+  .lede .manchete{font-size:1.6rem; max-width:none}
 }
 """
 
@@ -224,22 +243,21 @@ def _data(d, idioma):
     return d.strftime("%d/%m/%Y") if idioma == "pt" else d.strftime("%b %d, %Y")
 
 
-def _classe(v):
-    if v is None:
-        return "flat"
-    if v > 0:
-        return "up"
-    if v < 0:
-        return "down"
-    return "flat"
+def _classe(v, escuro=False):
+    """Classe do delta. A barra lateral usa um par de cores próprio, porque
+    o vermelho do conteúdo não tem contraste suficiente sobre o grafite."""
+    prefixo = "s-" if escuro else ""
+    if v is None or v == 0:
+        return f"{prefixo}flat"
+    return f"{prefixo}up" if v > 0 else f"{prefixo}down"
 
 
-def _delta(valor, idioma, sufixo="%"):
+def _delta(valor, idioma, sufixo="%", escuro=False):
     """Variação com seta + número. A seta é a codificação não-cromática."""
     if valor is None:
-        return '<span class="flat">—</span>'
+        return f'<span class="{_classe(None, escuro)}">—</span>'
     seta = "▲" if valor > 0 else ("▼" if valor < 0 else "■")
-    return (f'<span class="{_classe(valor)}">{seta} '
+    return (f'<span class="{_classe(valor, escuro)}">{seta} '
             f'{_numero(abs(valor), 2, idioma)}{sufixo}</span>')
 
 
@@ -289,29 +307,30 @@ def _sparkline(serie, positivo, largura=118, altura=30):
 # Blocos
 # ---------------------------------------------------------------------------
 
-def _tiles_macro(contexto, idioma, t):
+def _metricas_barra(contexto, idioma, t):
+    """Indicadores macro na barra lateral — cores próprias do fundo escuro."""
     if not contexto["macro"]:
-        return f'<p class="vazio">{t["sem_dados"]}</p>'
+        return ""
 
     nome = "nome_pt" if idioma == "pt" else "nome_en"
     blocos = []
     for d in contexto["macro"].values():
         # Taxa move em pontos percentuais; cotação, em porcentagem.
         if d["tipo"] == "taxa":
-            delta = _delta(d.get("var_dia_abs"), idioma, t["pp"])
+            delta = _delta(d.get("var_dia_abs"), idioma, t["pp"], escuro=True)
         else:
-            delta = _delta(d.get("var_dia_pct"), idioma)
+            delta = _delta(d.get("var_dia_pct"), idioma, escuro=True)
 
         blocos.append(
-            '<div class="tile">'
+            '<div class="metric">'
             f'<div class="rot">{_esc(d[nome])}</div>'
             f'<div class="val">{_numero(d["valor"], d["casas"], idioma)}'
             f'<span class="un">{_esc(d["unidade"])}</span></div>'
             f'<div class="delta">{delta}</div>'
-            f'<div class="ref">{t["ref"]} {_data(d["data"], idioma)}</div>'
+            f'<div class="ref">{_data(d["data"], idioma)}</div>'
             "</div>"
         )
-    return f'<div class="tiles">{"".join(blocos)}</div>'
+    return f'<div class="metrics">{"".join(blocos)}</div>'
 
 
 def _tabela_commodities(contexto, idioma, t):
@@ -363,7 +382,8 @@ def _bloco_noticias(contexto, t):
             f'{" · " + quando if quando else ""}</div>'
             "</li>"
         )
-    return f'<h2>{t["secao_noticias"]}</h2><ul class="news">{"".join(itens)}</ul>'
+    return (f'<section><h2>{t["secao_noticias"]}</h2>'
+            f'<ul class="news">{"".join(itens)}</ul></section>')
 
 
 # ---------------------------------------------------------------------------
@@ -379,13 +399,16 @@ def renderizar(contexto, narrativa, idioma, dias_historico=0):
 
     analise = "".join(f"<p>{_esc(p)}</p>" for p in narrativa.get("analise", []))
     bloco_analise = (
-        f'<h2>{t["secao_analise"]}</h2><div class="analise">{analise}</div>'
+        f'<section><h2>{t["secao_analise"]}</h2>'
+        f'<div class="analise">{analise}</div></section>'
         if analise else ""
     )
 
-    destaques = "".join(f"<li>{_esc(d)}</li>" for d in narrativa.get("destaques", []))
+    destaques = "".join(f"<li><span>{_esc(d)}</span></li>"
+                        for d in narrativa.get("destaques", []))
     bloco_destaques = (
-        f'<h2>{t["secao_destaques"]}</h2><ul class="lista">{destaques}</ul>'
+        f'<section><h2>{t["secao_destaques"]}</h2>'
+        f'<ul class="lista">{destaques}</ul></section>'
         if destaques else ""
     )
 
@@ -404,39 +427,40 @@ def renderizar(contexto, narrativa, idioma, dias_historico=0):
 <style>{CSS}</style>
 </head>
 <body>
-<div class="wrap">
+<div class="shell">
 
-  <header class="masthead">
-    <div>
-      <h1>{t["titulo"]}</h1>
-      <p class="sub">{t["subtitulo"]} · {_data(contexto["data_ref"], idioma)}</p>
-    </div>
+  <aside class="side">
+    <h1>{t["titulo"]}</h1>
+    <p class="data">{_data(contexto["data_ref"], idioma)}</p>
     <a class="lang" href="{t["href_alt"]}">{t["idioma_alt"]} →</a>
-  </header>
+    {_metricas_barra(contexto, idioma, t)}
+    <p class="placar">{placar}{hist}</p>
+  </aside>
 
-  <section class="hero">
-    <p class="manchete">{manchete}</p>
-    <p class="resumo">{resumo}</p>
-    <div class="placar">{placar}{hist}</div>
-  </section>
+  <main class="content">
 
-  <h2>{t["secao_macro"]}</h2>
-  {_tiles_macro(contexto, idioma, t)}
+    <section class="lede">
+      <p class="manchete">{manchete}</p>
+      <p class="resumo">{resumo}</p>
+    </section>
 
-  <h2>{t["secao_commodities"]}</h2>
-  {_tabela_commodities(contexto, idioma, t)}
+    <section>
+      <h2>{t["secao_commodities"]}</h2>
+      {_tabela_commodities(contexto, idioma, t)}
+    </section>
 
-  {bloco_analise}
-  {bloco_destaques}
-  {_bloco_noticias(contexto, t)}
+    {bloco_analise}
+    {bloco_destaques}
+    {_bloco_noticias(contexto, t)}
 
-  <footer>
-    <p><strong>{t["fontes"]}:</strong> {t["fontes_txt"]}</p>
-    <p>{t["gerado"]}: {_esc(narrativa.get("gerado_por", "—"))} ·
-       {t["atualizado"]}: {_data(contexto["gerado_em"], idioma)}</p>
-    <p class="aviso">{t["aviso"]}</p>
-  </footer>
+    <footer>
+      <p><strong>{t["fontes"]}:</strong> {t["fontes_txt"]}</p>
+      <p>{t["gerado"]}: {_esc(narrativa.get("gerado_por", "—"))} ·
+         {t["atualizado"]}: {_data(contexto["gerado_em"], idioma)}</p>
+      <p class="aviso">{t["aviso"]}</p>
+    </footer>
 
+  </main>
 </div>
 </body>
 </html>
