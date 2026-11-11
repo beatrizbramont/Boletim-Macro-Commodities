@@ -12,7 +12,7 @@ import logging
 import os
 import sys
 
-from . import analise, historico, ia, site
+from . import analise, config, historico, ia, site
 from .coletores import bcb, mercado, noticias
 
 
@@ -26,11 +26,16 @@ def configurar_log(verboso):
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
-def executar(sem_ia=False):
+def executar(sem_ia=False, previa=False):
     log = logging.getLogger("boletim")
 
     if sem_ia:
         os.environ["PROVEDOR_IA"] = "nenhum"
+
+    if previa:
+        destino = config.modo_previa()
+        log.info("modo prévia: escrevendo em %s (docs/ e dados/ intactos)",
+                 destino.parent.name)
 
     log.info("--- coleta ---")
     dados_macro = bcb.coletar()
@@ -62,12 +67,15 @@ def main():
     p = argparse.ArgumentParser(description="Gera o boletim diário.")
     p.add_argument("--sem-ia", action="store_true",
                    help="pula a IA e usa a narrativa determinística")
+    p.add_argument("--previa", action="store_true",
+                   help="escreve em .previa/ em vez de docs/ e dados/, "
+                        "para testar sem gerar conflito com o robô")
     p.add_argument("--verboso", action="store_true", help="log em nível DEBUG")
     args = p.parse_args()
 
     configurar_log(args.verboso)
     try:
-        return executar(sem_ia=args.sem_ia)
+        return executar(sem_ia=args.sem_ia, previa=args.previa)
     except Exception:
         logging.getLogger("boletim").exception("falha não tratada")
         return 1

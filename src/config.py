@@ -11,6 +11,38 @@ DIR_DADOS = RAIZ / "dados"
 DIR_SITE = RAIZ / "docs"
 ARQ_HISTORICO = DIR_DADOS / "historico.csv"
 
+# Pasta de rascunho para execuções locais (veja `modo_previa`). Fica fora do
+# versionamento, então testar na própria máquina nunca suja o repositório.
+DIR_PREVIA = RAIZ / ".previa"
+
+
+def modo_previa():
+    """Redireciona a escrita para `.previa/`, preservando docs/ e dados/.
+
+    O site e o histórico são versionados porque o GitHub Pages os serve e o
+    histórico é o dataset do projeto. Isso significa que rodar localmente e
+    deixar o robô rodar no CI produz dois commits mexendo nos mesmos
+    arquivos — e todo `git pull` vira conflito. Em modo prévia a execução
+    local escreve noutro lugar, e o conflito deixa de existir.
+    """
+    global DIR_DADOS, DIR_SITE, ARQ_HISTORICO
+
+    DIR_SITE = DIR_PREVIA / "docs"
+    DIR_DADOS = DIR_PREVIA / "dados"
+    ARQ_HISTORICO = DIR_DADOS / "historico.csv"
+
+    DIR_SITE.mkdir(parents=True, exist_ok=True)
+    DIR_DADOS.mkdir(parents=True, exist_ok=True)
+
+    # O histórico versionado é a base real; copiamos para a prévia na
+    # primeira vez, senão o boletim de teste sairia sem passado nenhum.
+    original = RAIZ / "dados" / "historico.csv"
+    if original.exists() and not ARQ_HISTORICO.exists():
+        ARQ_HISTORICO.write_text(original.read_text(encoding="utf-8"),
+                                 encoding="utf-8")
+
+    return DIR_SITE
+
 IDIOMAS = ("pt", "en")
 
 # --------------------------------------------------------------------------

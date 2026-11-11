@@ -1,5 +1,8 @@
 .venv/
 venv/
+# saída das execuções locais em modo prévia — nunca versionada, para não
+# conflitar com o que o robô gera no CI
+.previa/
 __pycache__/
 *.py[cod]
 .env

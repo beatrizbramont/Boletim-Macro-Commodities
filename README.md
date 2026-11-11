@@ -118,12 +118,26 @@ caiu — inclusive se o provedor de IA está bloqueado por proxy.
 Gerando o boletim:
 
 ```bash
-python -m src.main --sem-ia      # sem IA: funciona em rede que bloqueia o Gemini
-python -m src.main               # completo, exige GEMINI_API_KEY no .env
+python -m src.main --previa --sem-ia   # recomendado para testar
+python -m src.main --sem-ia            # sem IA, escrevendo em docs/
+python -m src.main                     # completo, exige GEMINI_API_KEY no .env
 ```
 
-O resultado fica em `docs/index.html` e `docs/en/index.html`. Abra no
+**Use `--previa` ao testar na sua máquina.** O site e o histórico são
+versionados — o Pages serve um e o outro é o dataset do projeto —, então uma
+execução local e outra do robô no CI produzem dois commits mexendo nos mesmos
+arquivos, e todo `git pull` vira conflito. Com `--previa` a saída vai para
+`.previa/`, que não é versionada, e `docs/` fica reservado ao robô.
+
+O resultado fica em `docs/index.html` (ou `.previa/docs/index.html`). Abra no
 navegador — são arquivos estáticos, sem servidor.
+
+> Se o conflito acontecer mesmo assim, lembre que os arquivos de `docs/` e
+> `dados/` são gerados: aceite a versão do servidor e siga.
+>
+> ```bash
+> git checkout --theirs dados docs && git add dados docs && git commit
+> ```
 
 ### Configurando a IA
 
