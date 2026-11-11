@@ -35,7 +35,9 @@ jobs:
         env:
           PROVEDOR_IA: ${{ vars.PROVEDOR_IA || 'gemini' }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODELO: ${{ vars.GEMINI_MODELO || 'gemini-2.5-flash' }}
+          # Vazio por padrão: o projeto descobre o modelo pela API. Defina a
+          # variável GEMINI_MODELO no repositório só para fixar um específico.
+          GEMINI_MODELO: ${{ vars.GEMINI_MODELO }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: python -m src.main

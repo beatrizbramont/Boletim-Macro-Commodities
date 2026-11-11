@@ -131,8 +131,10 @@ def _erro_da_api(resposta):
         erro = resposta.json().get("error", {})
         detalhe = erro.get("message") or str(erro)
     except ValueError:
-        detalhe = resposta.text[:300]
-    return f"HTTP {resposta.status_code}: {detalhe[:300]}"
+        detalhe = resposta.text
+    # Largo o bastante para não cortar a sugestão de substituto: foi assim
+    # que a mensagem "use models/gemini-..." chegou truncada no log.
+    return f"HTTP {resposta.status_code}: {detalhe[:600]}"
 
 
 def _post_gemini(modelo, payload):
@@ -147,8 +149,85 @@ def _post_gemini(modelo, payload):
     )
 
 
+# Modelo descoberto nesta execução — evita repetir a busca para cada idioma.
+_modelo_descoberto = None
+
+# Termos que marcam variantes que não queremos escolher sozinhos: são
+# instáveis, caras ou servem a outro propósito.
+_INDESEJADOS = ("embedding", "aqa", "vision", "image", "audio", "tts",
+                "exp", "preview", "learnlm", "gemma")
+
+
+def _pontuar(nome):
+    """Quanto maior, melhor candidato para escrever o boletim.
+
+    Preferimos a família flash (rápida e com cota generosa no free tier) e,
+    dentro dela, a maior versão disponível.
+    """
+    base = nome.removeprefix("models/")
+    if any(t in base for t in _INDESEJADOS):
+        return -1
+
+    pontos = 0
+    if "flash" in base:
+        pontos += 100          # flash é o alvo
+        if "lite" in base:
+            pontos -= 30       # lite só se não houver flash cheio
+    elif "pro" in base:
+        pontos += 50           # pro serve, mas gasta mais cota
+
+    # "gemini-3-flash" > "gemini-2.5-flash": a maior versão vence.
+    versao = re.search(r"gemini-(\d+)(?:\.(\d+))?", base)
+    if versao:
+        pontos += int(versao.group(1)) * 10 + int(versao.group(2) or 0)
+    if base.endswith("-latest"):
+        pontos += 5            # alias estável, sobrevive a trocas de versão
+    return pontos
+
+
+def _descobrir_modelo():
+    """Pergunta ao Google quais modelos a chave pode usar e escolhe um.
+
+    O Google aposenta modelos para chaves novas sem aviso — foi assim que o
+    gemini-2.5-flash parou de responder. Descobrir em tempo de execução custa
+    uma requisição e evita que o boletim caia toda vez que isso se repetir.
+    """
+    global _modelo_descoberto
+    if _modelo_descoberto:
+        return _modelo_descoberto
+
+    resposta = rede.sessao().get(
+        "https://generativelanguage.googleapis.com/v1beta/models",
+        headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"]},
+        params={"pageSize": 200},
+        timeout=45,
+    )
+    if not resposta.ok:
+        raise RuntimeError(f"não foi possível listar modelos — {_erro_da_api(resposta)}")
+
+    candidatos = [
+        m["name"]
+        for m in resposta.json().get("models", [])
+        if "generateContent" in (m.get("supportedGenerationMethods") or [])
+    ]
+    viaveis = sorted(
+        (c for c in candidatos if _pontuar(c) > 0), key=_pontuar, reverse=True
+    )
+    if not viaveis:
+        raise RuntimeError(f"nenhum modelo utilizável entre {len(candidatos)} "
+                           f"retornados pela API")
+
+    _modelo_descoberto = viaveis[0].removeprefix("models/")
+    log.info("modelo descoberto automaticamente: %s (entre %d candidatos)",
+             _modelo_descoberto, len(viaveis))
+    return _modelo_descoberto
+
+
 def _chamar_gemini(prompt, max_tokens, json_estrito):
-    modelo = os.getenv("GEMINI_MODELO") or "gemini-2.5-flash"
+    # Sem GEMINI_MODELO definido, perguntamos à API qual usar. Fixar um nome
+    # no código foi exatamente o que quebrou quando o Google aposentou o
+    # gemini-2.5-flash para chaves novas.
+    modelo = os.getenv("GEMINI_MODELO") or _modelo_descoberto or _descobrir_modelo()
     config_geracao = {
         "temperature": 0.4,
         "maxOutputTokens": max_tokens,
@@ -173,6 +252,15 @@ def _chamar_gemini(prompt, max_tokens, json_estrito):
         log.warning("%s não aceita thinkingConfig — repetindo sem o campo", modelo)
         config_geracao.pop("thinkingConfig", None)
         resposta = _post_gemini(modelo, payload)
+
+    # Modelo aposentado ou inexistente: descobrir um vivo e repetir uma vez.
+    if resposta.status_code == 404:
+        log.warning("modelo %s indisponível (%s) — procurando substituto",
+                    modelo, _erro_da_api(resposta))
+        substituto = _descobrir_modelo()
+        if substituto != modelo:
+            modelo = substituto
+            resposta = _post_gemini(modelo, payload)
 
     if not resposta.ok:
         raise RuntimeError(f"Gemini ({modelo}) recusou — {_erro_da_api(resposta)}")
