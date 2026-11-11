@@ -4,20 +4,24 @@ Gera docs/index.html (pt) e docs/en/index.html (en). Sem framework e sem
 build: o Pages serve o arquivo como está.
 
 Decisões de visualização:
+- Identidade editorial: superfície de papel (creme #faf8f3, cartões #fffdf8),
+  hairlines, escala tipográfica generosa. O objetivo é ler como relatório
+  impresso, não como painel de corretora.
+- Tema claro apenas. Sem modo escuro automático, por escolha de design.
 - Alta/baixa é *estado*, não identidade, então usa a paleta de status
-  (verde #0ca30c / vermelho #d03b3b em claro, #e66767 em escuro). Validadas
-  com ΔE de daltonismo 12,4 no claro e 23,4 no escuro, ambas ≥ 3:1 de
-  contraste contra a superfície.
+  (verde #0ca30c / vermelho #d03b3b), revalidada contra a superfície creme:
+  ΔE de daltonismo 12,4 e contraste ≥ 3:1 em ambos os planos.
 - A cor nunca carrega o sinal sozinha: toda variação vem com seta e número,
   que é a codificação secundária exigida quando o ΔE fica perto do piso.
+- Sem serifa, mesmo no registro editorial — o efeito vem de espaçamento,
+  hairlines e escala, não de um tipo decorativo.
 - Sparklines têm uma série só, portanto não levam legenda nem rótulo por
-  ponto — o valor de cada dia fica no tooltip e na própria tabela.
+  ponto — o valor de cada dia fica na própria tabela.
 - O boletim inteiro já é a "table view" acessível dos gráficos.
 """
 
 import html
 import logging
-from datetime import date
 
 from . import config
 
@@ -83,112 +87,120 @@ TEXTOS = {
 CSS = """
 *,*::before,*::after{box-sizing:border-box}
 :root{
-  --surface:#fcfcfb; --plane:#f9f9f7;
-  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
-  --grid:#e1e0d9; --border:rgba(11,11,11,.10);
-  --up:#006300; --up-mark:#0ca30c; --down:#d03b3b; --down-mark:#d03b3b;
-  --radius:14px;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --surface:#1a1a19; --plane:#0d0d0d;
-    --ink:#fff; --ink-2:#c3c2b7; --muted:#898781;
-    --grid:#2c2c2a; --border:rgba(255,255,255,.10);
-    --up:#0ca30c; --up-mark:#0ca30c; --down:#e66767; --down-mark:#e66767;
-  }
-}
-:root[data-theme="dark"]{
-  --surface:#1a1a19; --plane:#0d0d0d;
-  --ink:#fff; --ink-2:#c3c2b7; --muted:#898781;
-  --grid:#2c2c2a; --border:rgba(255,255,255,.10);
-  --up:#0ca30c; --up-mark:#0ca30c; --down:#e66767; --down-mark:#e66767;
-}
-:root[data-theme="light"]{
-  --surface:#fcfcfb; --plane:#f9f9f7;
-  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
-  --grid:#e1e0d9; --border:rgba(11,11,11,.10);
-  --up:#006300; --up-mark:#0ca30c; --down:#d03b3b; --down-mark:#d03b3b;
+  --paper:#faf8f3;        /* plano da página */
+  --card:#fffdf8;         /* superfície dos blocos */
+  --ink:#1a1814;          /* tinta primária */
+  --ink-2:#57503f;        /* tinta secundária */
+  --muted:#8a8172;        /* rótulos e eixos */
+  --rule:#e8e2d6;         /* hairline */
+  --rule-forte:#d6cdba;   /* fio do cabeçalho */
+  --up:#005c00;    --up-mark:#0ca30c;
+  --down:#a32b2b;  --down-mark:#d03b3b;
 }
 body{
-  margin:0; background:var(--plane); color:var(--ink);
+  margin:0; background:var(--paper); color:var(--ink);
   font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-  line-height:1.6; -webkit-font-smoothing:antialiased;
+  line-height:1.65; -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
-.wrap{max-width:900px; margin:0 auto; padding:32px 20px 72px}
+.wrap{max-width:860px; margin:0 auto; padding:0 24px 80px}
 a{color:inherit}
 
-header.top{display:flex; justify-content:space-between; align-items:flex-start;
-  gap:16px; flex-wrap:wrap; margin-bottom:28px}
-h1{font-size:1.5rem; line-height:1.25; margin:0 0 4px; letter-spacing:-.02em}
-.sub{color:var(--muted); font-size:.85rem; margin:0}
-.lang{border:1px solid var(--border); border-radius:999px; padding:6px 14px;
-  font-size:.8rem; text-decoration:none; color:var(--ink-2); white-space:nowrap;
-  background:var(--surface)}
-.lang:hover{border-color:var(--muted)}
+/* --- masthead: fio duplo, como cabeçalho de jornal --- */
+.masthead{border-bottom:3px double var(--rule-forte); padding:40px 0 18px;
+  margin-bottom:30px; display:flex; justify-content:space-between;
+  align-items:flex-end; gap:20px; flex-wrap:wrap}
+h1{font-size:1.75rem; line-height:1.15; margin:0 0 6px; font-weight:700;
+  letter-spacing:-.025em}
+.sub{color:var(--muted); font-size:.8rem; margin:0; letter-spacing:.02em}
+.lang{font-size:.76rem; text-decoration:none; color:var(--ink-2);
+  border-bottom:1px solid var(--rule-forte); padding-bottom:2px;
+  white-space:nowrap; letter-spacing:.03em}
+.lang:hover{color:var(--ink); border-color:var(--ink)}
 
-.hero{background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:26px 24px; margin-bottom:24px}
-.hero .manchete{font-size:1.45rem; line-height:1.3; font-weight:650;
-  letter-spacing:-.02em; margin:0 0 12px}
-.hero .resumo{color:var(--ink-2); margin:0; font-size:1rem}
-.placar{margin-top:16px; padding-top:14px; border-top:1px solid var(--grid);
-  color:var(--muted); font-size:.82rem; font-variant-numeric:tabular-nums}
+/* --- lide --- */
+.hero{margin-bottom:38px}
+.hero .manchete{font-size:1.85rem; line-height:1.22; font-weight:680;
+  letter-spacing:-.03em; margin:0 0 14px; max-width:26ch}
+.hero .resumo{color:var(--ink-2); margin:0; font-size:1.06rem; max-width:62ch}
+.placar{margin-top:18px; padding-top:13px; border-top:1px solid var(--rule);
+  color:var(--muted); font-size:.78rem; font-variant-numeric:tabular-nums;
+  letter-spacing:.02em}
 
-h2{font-size:.78rem; text-transform:uppercase; letter-spacing:.09em;
-  color:var(--muted); font-weight:600; margin:34px 0 12px}
+h2{font-size:.7rem; text-transform:uppercase; letter-spacing:.14em;
+  color:var(--muted); font-weight:600; margin:42px 0 14px;
+  padding-bottom:7px; border-bottom:1px solid var(--rule)}
 
-.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px}
-.tile{background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:16px 18px}
-.tile .rot{color:var(--muted); font-size:.75rem; margin-bottom:6px}
-.tile .val{font-size:1.55rem; font-weight:620; letter-spacing:-.02em; line-height:1.15}
-.tile .un{font-size:.8rem; color:var(--muted); font-weight:400; margin-left:3px}
-.tile .delta{font-size:.8rem; margin-top:5px; font-variant-numeric:tabular-nums}
-.tile .ref{color:var(--muted); font-size:.68rem; margin-top:8px;
+/* --- indicadores macro --- */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:0; border:1px solid var(--rule); background:var(--card)}
+.tile{padding:18px 20px; border-right:1px solid var(--rule)}
+.tile:last-child{border-right:none}
+.tile .rot{color:var(--muted); font-size:.71rem; margin-bottom:7px;
+  text-transform:uppercase; letter-spacing:.07em}
+.tile .val{font-size:1.7rem; font-weight:600; letter-spacing:-.03em;
+  line-height:1.1}
+.tile .un{font-size:.78rem; color:var(--muted); font-weight:400; margin-left:4px;
+  letter-spacing:0}
+.tile .delta{font-size:.79rem; margin-top:6px; font-variant-numeric:tabular-nums}
+.tile .ref{color:var(--muted); font-size:.66rem; margin-top:9px;
   font-variant-numeric:tabular-nums}
 
-.tbl-wrap{background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); overflow-x:auto}
-table{width:100%; border-collapse:collapse; font-size:.88rem; min-width:560px}
-th{text-align:right; font-weight:600; font-size:.7rem; text-transform:uppercase;
-  letter-spacing:.06em; color:var(--muted); padding:13px 14px;
-  border-bottom:1px solid var(--grid); white-space:nowrap}
+/* --- tabela --- */
+.tbl-wrap{border:1px solid var(--rule); background:var(--card); overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:.87rem; min-width:580px}
+th{text-align:right; font-weight:600; font-size:.66rem; text-transform:uppercase;
+  letter-spacing:.09em; color:var(--muted); padding:13px 16px;
+  border-bottom:1px solid var(--rule-forte); white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
 th:last-child,td:last-child{text-align:center}
-td{padding:11px 14px; border-bottom:1px solid var(--grid); text-align:right;
+td{padding:12px 16px; border-bottom:1px solid var(--rule); text-align:right;
   font-variant-numeric:tabular-nums; white-space:nowrap}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--plane)}
-.ativo{font-weight:550}
-.un-cell{color:var(--muted); font-size:.74rem; font-weight:400; margin-left:4px}
+tbody tr:hover td{background:var(--paper)}
+.ativo{font-weight:550; letter-spacing:-.005em}
+.un-cell{color:var(--muted); font-size:.72rem; font-weight:400; margin-left:5px}
 .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
 .spark{display:block; margin:0 auto}
 
-ul.lista{list-style:none; padding:0; margin:0; background:var(--surface);
-  border:1px solid var(--border); border-radius:var(--radius)}
-ul.lista li{padding:13px 18px; border-bottom:1px solid var(--grid); font-size:.9rem}
+/* --- destaques --- */
+ul.lista{list-style:none; padding:0; margin:0; border:1px solid var(--rule);
+  background:var(--card)}
+ul.lista li{padding:13px 20px; border-bottom:1px solid var(--rule);
+  font-size:.89rem; font-variant-numeric:tabular-nums}
 ul.lista li:last-child{border-bottom:none}
-ul.lista li::before{content:"▸"; color:var(--muted); margin-right:10px}
+ul.lista li::before{content:"—"; color:var(--muted); margin-right:12px}
 
-.analise p{margin:0 0 14px; font-size:.97rem}
+/* --- análise: coluna de leitura --- */
+.analise{border-left:2px solid var(--rule-forte); padding:2px 0 2px 24px}
+.analise p{margin:0 0 16px; font-size:1rem; max-width:66ch; color:var(--ink-2)}
+.analise p:first-child{color:var(--ink)}
 .analise p:last-child{margin-bottom:0}
-.analise{background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:24px}
 
-.news{list-style:none; padding:0; margin:0}
-.news li{background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:14px 18px; margin-bottom:9px}
-.news a{text-decoration:none; font-size:.92rem; font-weight:500}
-.news a:hover{text-decoration:underline}
-.news .meta{color:var(--muted); font-size:.72rem; margin-top:4px}
+/* --- notícias --- */
+.news{list-style:none; padding:0; margin:0; border-top:1px solid var(--rule)}
+.news li{padding:14px 0; border-bottom:1px solid var(--rule)}
+.news a{text-decoration:none; font-size:.93rem; font-weight:500;
+  line-height:1.4; display:inline-block}
+.news a:hover{text-decoration:underline; text-underline-offset:3px}
+.news .meta{color:var(--muted); font-size:.7rem; margin-top:5px;
+  text-transform:uppercase; letter-spacing:.06em}
 
-footer{margin-top:44px; padding-top:22px; border-top:1px solid var(--grid);
-  color:var(--muted); font-size:.76rem}
+footer{margin-top:52px; padding-top:22px; border-top:3px double var(--rule-forte);
+  color:var(--muted); font-size:.74rem; line-height:1.7}
 footer p{margin:0 0 7px}
-.aviso{font-style:italic; opacity:.85}
-.vazio{color:var(--muted); font-size:.88rem; padding:18px;
-  background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius)}
+footer strong{color:var(--ink-2); font-weight:600}
+.aviso{font-style:italic; opacity:.9; margin-top:12px}
+.vazio{color:var(--muted); font-size:.87rem; padding:20px;
+  background:var(--card); border:1px solid var(--rule)}
+
+@media (max-width:620px){
+  .wrap{padding:0 18px 56px}
+  h1{font-size:1.4rem}
+  .hero .manchete{font-size:1.45rem; max-width:none}
+  .tile{border-right:none; border-bottom:1px solid var(--rule)}
+  .tile:last-child{border-bottom:none}
+}
 """
 
 
@@ -388,18 +400,18 @@ def renderizar(contexto, narrativa, idioma, dias_historico=0):
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{t["titulo"].replace("&amp;", "&")} — {_data(contexto["data_ref"], idioma)}</title>
 <meta name="description" content="{manchete}">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <style>{CSS}</style>
 </head>
 <body>
 <div class="wrap">
 
-  <header class="top">
+  <header class="masthead">
     <div>
       <h1>{t["titulo"]}</h1>
-      <p class="sub">{t["subtitulo"]}</p>
+      <p class="sub">{t["subtitulo"]} · {_data(contexto["data_ref"], idioma)}</p>
     </div>
-    <a class="lang" href="{t["href_alt"]}">{t["idioma_alt"]}</a>
+    <a class="lang" href="{t["href_alt"]}">{t["idioma_alt"]} →</a>
   </header>
 
   <section class="hero">

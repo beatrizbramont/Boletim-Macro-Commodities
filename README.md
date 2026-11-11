@@ -188,11 +188,15 @@ analisar os meses seguintes.
 
 ## Visualização
 
-As cores seguem uma paleta validada por script para daltonismo e contraste
-(ΔE 12,4 no modo claro e 23,4 no escuro, ambas ≥ 3:1 contra a superfície).
+A identidade é editorial: superfície de papel (creme `#faf8f3`), hairlines,
+fio duplo no cabeçalho e no rodapé, escala tipográfica generosa. A intenção é
+ler como relatório impresso, e não como painel de corretora — e o efeito vem
+de espaçamento e fios, sem nenhum tipo serifado ou decorativo.
+
+As cores de alta e baixa foram validadas por script para daltonismo e
+contraste contra a superfície creme (ΔE 12,4, contraste ≥ 3:1 nos dois planos).
 A cor nunca carrega significado sozinha: toda variação vem acompanhada de seta
-e número, e a tabela inteira é a versão acessível dos sparklines. Os dois modos,
-claro e escuro, têm valores próprios — o escuro não é uma inversão automática.
+e número, e a tabela inteira é a versão acessível dos sparklines.
 
 ---
 
