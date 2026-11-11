@@ -72,6 +72,14 @@ regex com `\b`, e termos ambíguos como `"real"` e `"tarifa"` (que pegam
 O endpoint `/ultimos/N` responde HTTP 400 acima de ~20 pontos em séries
 diárias, embora a própria mensagem de erro anuncie aceitar até 99.
 
+**O modelo de IA é descoberto em tempo de execução, não fixado no código.**
+A primeira versão trazia `gemini-2.5-flash` escrito no código, e a primeira
+execução real falhou com *"this model is no longer available to new users"* —
+o Google aposenta modelos para chaves novas sem aviso. Agora o projeto
+consulta a API, descarta variantes experimentais e de embedding, e fica com a
+família `flash` de maior versão. Uma requisição a mais por execução em troca
+de não quebrar na próxima descontinuação.
+
 **A IA interpreta; ela nunca calcula.**
 Todos os números chegam prontos ao prompt, e o modelo é instruído a jamais
 inventar ou estimar um valor. Num boletim financeiro, um número alucinado é
