@@ -4,8 +4,8 @@ Um robô que, todo dia útil às 8h, coleta dados de câmbio, juros e commoditie
 cruza com as manchetes do setor, pede a um modelo de linguagem que escreva a
 análise e publica um boletim bilíngue — sem ninguém apertar nada.
 
-**→ [Ver o boletim de hoje](https://SEU-USUARIO.github.io/boletim-commodities/)**
-· [English version](https://SEU-USUARIO.github.io/boletim-commodities/en/)
+**→ [Ver o boletim de hoje](https://beatrizbramont.github.io/Boletim-Macro-Commodities/)**
+· [English version](https://beatrizbramont.github.io/Boletim-Macro-Commodities/en/)
 
 Roda inteiramente em infraestrutura gratuita: GitHub Actions para a execução,
 GitHub Pages para a publicação, e o free tier do Google AI Studio para a
@@ -96,8 +96,8 @@ diário, isso publicaria a cotação de ontem como se fosse de hoje.
 ## Rodando localmente
 
 ```bash
-git clone https://github.com/SEU-USUARIO/boletim-commodities.git
-cd boletim-commodities
+git clone https://github.com/beatrizbramont/Boletim-Macro-Commodities.git
+cd Boletim-Macro-Commodities
 
 python -m venv .venv
 .venv\Scripts\activate          # Windows
@@ -149,7 +149,7 @@ corporativa.
 1. Suba o repositório.
 2. **Settings → Secrets and variables → Actions → New repository secret**
    · nome `GEMINI_API_KEY`, valor a sua chave.
-3. **Settings → Pages** · Source: `Deploy from a branch`, branch `main`,
+3. **Settings → Pages** · Source: `Deploy from a branch`, branch `master`,
    pasta `/docs`.
 4. **Actions → Boletim diário → Run workflow** para a primeira execução.
 

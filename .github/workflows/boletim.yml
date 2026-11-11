@@ -40,6 +40,27 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: python -m src.main
 
+      - name: Resumo da execução
+        if: always()
+        run: |
+          # Mostra na tela do Actions quem escreveu a narrativa — é a forma
+          # mais rápida de notar que a IA caiu e o boletim saiu degradado.
+          {
+            echo "## Boletim de $(date -u +'%d/%m/%Y')"
+            echo ""
+            if [ -f docs/index.html ]; then
+              echo "- **Manchete:** $(grep -oP '(?<=<p class="manchete">).*?(?=</p>)' docs/index.html | head -1)"
+              echo "- **Narrativa por:** $(grep -oP '(?<=Narrativa gerada por: ).*?(?= ·)' docs/index.html | head -1)"
+            else
+              echo "- Nenhum boletim foi gerado."
+            fi
+            if [ -f dados/historico.csv ]; then
+              echo "- **Histórico:** $(($(wc -l < dados/historico.csv) - 1)) linhas acumuladas"
+            fi
+            echo ""
+            echo "[Ver boletim publicado](https://beatrizbramont.github.io/Boletim-Macro-Commodities/)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Publicar alterações
         run: |
           git config user.name  "github-actions[bot]"
