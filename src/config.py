@@ -19,12 +19,7 @@ IDIOMAS = ("pt", "en")
 #
 # Consultamos por intervalo de datas, e não por /ultimos/N: o endpoint
 # /ultimos/N responde 400 acima de ~20 pontos em algumas séries diárias.
-#
-# "tipo" decide como a variação é medida:
-#   nivel  -> preço/cotação; variação relativa (%) faz sentido
-#   taxa   -> a série já é um percentual; comparar em pontos percentuais.
-#             O IPCA de ago/2026 foi -0,32% (deflação), e variação relativa
-#             contra um número negativo produz resultado sem significado.
+
 # --------------------------------------------------------------------------
 
 SERIES_BCB = {

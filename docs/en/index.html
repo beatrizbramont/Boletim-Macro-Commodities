@@ -9,11 +9,9 @@
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{
-  /* barra escura */
   --side:#1f1c17; --side-ink:#fff; --side-ink-2:#c6bdab; --side-muted:#a39a8a;
   --side-rule:rgba(255,255,255,.13);
   --side-up:#0ca30c; --side-down:#ef6f6f;
-  /* conteúdo */
   --paper:#f3efe5; --card:#fff;
   --ink:#1a1814; --ink-2:#4d4639; --muted:#6e6657;
   --rule:#e0d8c7; --rule-forte:#cbc0a9;
@@ -31,7 +29,6 @@ a{color:inherit}
 
 .shell{display:flex; align-items:flex-start; min-height:100vh}
 
-/* ---------------- barra lateral ---------------- */
 .side{
   width:272px; flex:0 0 272px; background:var(--side); color:var(--side-ink);
   position:sticky; top:0; max-height:100vh; overflow-y:auto;
@@ -63,7 +60,6 @@ a{color:inherit}
 .side .placar{margin-top:18px; color:var(--side-muted); font-size:.71rem;
   line-height:1.6; font-variant-numeric:tabular-nums}
 
-/* ---------------- conteúdo ---------------- */
 .content{flex:1 1 auto; min-width:0; padding:46px 48px 64px; max-width:1100px}
 
 .lede{margin-bottom:44px}
@@ -75,7 +71,6 @@ h2{font-size:.68rem; text-transform:uppercase; letter-spacing:.15em;
   color:var(--muted); font-weight:650; margin:0 0 13px}
 section{margin-bottom:42px}
 
-/* tabela em branco puro, recortada sobre o papel */
 .tbl-wrap{background:var(--card); border:1px solid var(--rule); overflow-x:auto}
 table{width:100%; border-collapse:collapse; font-size:.87rem; min-width:600px}
 th{text-align:right; font-weight:650; font-size:.64rem; text-transform:uppercase;
@@ -92,21 +87,17 @@ tbody tr:hover td{background:var(--paper)}
 .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
 .spark{display:block; margin:0 auto}
 
-/* análise em branco, largura de leitura */
 .analise{background:var(--card); border:1px solid var(--rule); padding:28px 32px}
 .analise p{margin:0 0 15px; font-size:1rem; max-width:68ch; color:var(--ink-2)}
 .analise p:first-child{color:var(--ink); font-size:1.04rem}
 .analise p:last-child{margin-bottom:0}
 
-/* destaques: bloco de cor, peso visual diferente */
 ul.lista{list-style:none; padding:6px 0; margin:0; background:var(--destaque);
   border:1px solid var(--rule-forte)}
 ul.lista li{padding:9px 22px; font-size:.88rem;
   font-variant-numeric:tabular-nums; display:flex; gap:12px}
-/* --muted rende só 4,40 sobre o bege do bloco; --ink-2 recupera a margem. */
 ul.lista li::before{content:"—"; color:var(--ink-2); flex:0 0 auto}
 
-/* notícias em duas colunas, sem caixas */
 .news{list-style:none; padding:0; margin:0; columns:2; column-gap:40px}
 .news li{padding:0 0 16px; break-inside:avoid; margin-bottom:16px;
   border-bottom:1px solid var(--rule)}
