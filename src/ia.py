@@ -284,8 +284,14 @@ def _narrativa_deterministica(contexto, idioma):
     unidade = "unidade_pt" if pt else "unidade_en"
 
     destaques_dia = contexto.get("destaques") or []
-    altas = [d for d in destaques_dia if (d.get("var_dia_pct") or 0) > 0]
-    baixas = [d for d in destaques_dia if (d.get("var_dia_pct") or 0) < 0]
+    # O placar vem de analise.py e cobre TODOS os ativos. Contar sobre os
+    # destaques daria o número de maiores movimentos, não o de altas do dia —
+    # e a frase ficaria factualmente errada, contradizendo o placar que a
+    # barra lateral exibe na mesma página.
+    placar = contexto.get("placar") or {}
+    n_altas = placar.get("altas", 0)
+    n_baixas = placar.get("baixas", 0)
+    n_total = placar.get("total", 0)
     dolar = contexto["macro"].get("usd_brl")
 
     if destaques_dia:
@@ -301,7 +307,8 @@ def _narrativa_deterministica(contexto, idioma):
 
     if pt:
         resumo = (
-            f"{len(altas)} dos ativos acompanhados fecharam em alta e {len(baixas)} em baixa. "
+            f"Dos {n_total} ativos acompanhados, {n_altas} fecharam em alta "
+            f"e {n_baixas} em baixa. "
         )
         if dolar:
             resumo += (
@@ -310,7 +317,8 @@ def _narrativa_deterministica(contexto, idioma):
             )
     else:
         resumo = (
-            f"{len(altas)} of the tracked assets closed higher and {len(baixas)} lower. "
+            f"Of the {n_total} tracked assets, {n_altas} closed higher "
+            f"and {n_baixas} lower. "
         )
         if dolar:
             resumo += (

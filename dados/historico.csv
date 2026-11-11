@@ -1,14 +1,14 @@
 data,categoria,chave,nome,valor,unidade,var_dia_pct,var_semana_pct,var_mes_pct
-2026-11-11,agro,CT=F,Algodão,82.6400,¢/libra,5.0197,5.7995,2.5310
-2026-11-11,agro,KC=F,Café (Arábica),262.4000,¢/libra,-3.3161,-6.2020,-9.7041
-2026-11-11,agro,LE=F,Boi gordo (CME),219.2000,¢/libra,1.3876,0.4813,-2.5670
-2026-11-11,agro,SB=F,Açúcar (nº 11),18.2800,¢/libra,1.0503,-1.0287,-12.3261
-2026-11-11,agro,ZC=F,Milho,446.5000,¢/bushel,-0.5568,0.5065,-7.5569
-2026-11-11,agro,ZS=F,Soja,1226.2500,¢/bushel,0.1429,2.7656,-4.7758
-2026-11-11,agro,ZW=F,Trigo,596.2500,¢/bushel,0.5905,-0.3759,-11.3053
-2026-11-11,energia,CL=F,Petróleo WTI,87.1800,US$/barril,1.3250,-1.0667,-6.9981
-2026-11-11,indice,^BVSP,Ibovespa,172399.2500,pontos,0.6200,2.8856,-16.4003
-2026-11-11,macro,eur_brl,Euro (venda),6.2317,R$,0.9329,,11.5453
+2026-11-11,agro,CT=F,Algodão,82.3500,¢/libra,4.6512,5.4282,2.1712
+2026-11-11,agro,KC=F,Café (Arábica),265.4500,¢/libra,-2.1923,-5.1117,-8.6545
+2026-11-11,agro,LE=F,Boi gordo (CME),218.8000,¢/libra,-0.1825,0.3670,-2.6474
+2026-11-11,agro,SB=F,Açúcar (nº 11),18.4700,¢/libra,2.1006,0.0000,-11.4149
+2026-11-11,agro,ZC=F,Milho,448.7500,¢/bushel,-0.0557,1.0129,-7.0911
+2026-11-11,agro,ZS=F,Soja,1230.5000,¢/bushel,0.4900,3.1217,-4.4457
+2026-11-11,agro,ZW=F,Trigo,600.7500,¢/bushel,1.3496,0.3759,-10.6359
+2026-11-11,energia,CL=F,Petróleo WTI,86.2600,US$/barril,0.2557,-2.1108,-7.9795
+2026-11-11,indice,^BVSP,Ibovespa,172340.1250,pontos,0.5855,2.8503,-16.4290
+2026-11-11,macro,eur_brl,Euro (venda),6.1706,R$,-0.9805,,10.0066
 2026-11-11,macro,ipca,IPCA (mês),0.82,%,,,
 2026-11-11,macro,selic,Selic (meta),13.75,% a.a.,,,
-2026-11-11,macro,usd_brl,Dólar (PTAX venda),5.5840,R$,1.2585,,11.8254
+2026-11-11,macro,usd_brl,Dólar (PTAX venda),5.5606,R$,-0.4191,,10.9479
