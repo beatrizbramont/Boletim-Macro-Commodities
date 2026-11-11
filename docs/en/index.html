@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Macro & Commodities Briefing — Nov 11, 2026</title>
+<meta name="description" content="Cotton advances 5.02%">
+<meta name="color-scheme" content="light dark">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --surface:#fcfcfb; --plane:#f9f9f7;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --border:rgba(11,11,11,.10);
+  --up:#006300; --up-mark:#0ca30c; --down:#d03b3b; --down-mark:#d03b3b;
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --surface:#1a1a19; --plane:#0d0d0d;
+    --ink:#fff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --border:rgba(255,255,255,.10);
+    --up:#0ca30c; --up-mark:#0ca30c; --down:#e66767; --down-mark:#e66767;
+  }
+}
+:root[data-theme="dark"]{
+  --surface:#1a1a19; --plane:#0d0d0d;
+  --ink:#fff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --border:rgba(255,255,255,.10);
+  --up:#0ca30c; --up-mark:#0ca30c; --down:#e66767; --down-mark:#e66767;
+}
+:root[data-theme="light"]{
+  --surface:#fcfcfb; --plane:#f9f9f7;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --border:rgba(11,11,11,.10);
+  --up:#006300; --up-mark:#0ca30c; --down:#d03b3b; --down-mark:#d03b3b;
+}
+body{
+  margin:0; background:var(--plane); color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:900px; margin:0 auto; padding:32px 20px 72px}
+a{color:inherit}
+
+header.top{display:flex; justify-content:space-between; align-items:flex-start;
+  gap:16px; flex-wrap:wrap; margin-bottom:28px}
+h1{font-size:1.5rem; line-height:1.25; margin:0 0 4px; letter-spacing:-.02em}
+.sub{color:var(--muted); font-size:.85rem; margin:0}
+.lang{border:1px solid var(--border); border-radius:999px; padding:6px 14px;
+  font-size:.8rem; text-decoration:none; color:var(--ink-2); white-space:nowrap;
+  background:var(--surface)}
+.lang:hover{border-color:var(--muted)}
+
+.hero{background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:26px 24px; margin-bottom:24px}
+.hero .manchete{font-size:1.45rem; line-height:1.3; font-weight:650;
+  letter-spacing:-.02em; margin:0 0 12px}
+.hero .resumo{color:var(--ink-2); margin:0; font-size:1rem}
+.placar{margin-top:16px; padding-top:14px; border-top:1px solid var(--grid);
+  color:var(--muted); font-size:.82rem; font-variant-numeric:tabular-nums}
+
+h2{font-size:.78rem; text-transform:uppercase; letter-spacing:.09em;
+  color:var(--muted); font-weight:600; margin:34px 0 12px}
+
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px}
+.tile{background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px 18px}
+.tile .rot{color:var(--muted); font-size:.75rem; margin-bottom:6px}
+.tile .val{font-size:1.55rem; font-weight:620; letter-spacing:-.02em; line-height:1.15}
+.tile .un{font-size:.8rem; color:var(--muted); font-weight:400; margin-left:3px}
+.tile .delta{font-size:.8rem; margin-top:5px; font-variant-numeric:tabular-nums}
+.tile .ref{color:var(--muted); font-size:.68rem; margin-top:8px;
+  font-variant-numeric:tabular-nums}
+
+.tbl-wrap{background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:.88rem; min-width:560px}
+th{text-align:right; font-weight:600; font-size:.7rem; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--muted); padding:13px 14px;
+  border-bottom:1px solid var(--grid); white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th:last-child,td:last-child{text-align:center}
+td{padding:11px 14px; border-bottom:1px solid var(--grid); text-align:right;
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--plane)}
+.ativo{font-weight:550}
+.un-cell{color:var(--muted); font-size:.74rem; font-weight:400; margin-left:4px}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
+.spark{display:block; margin:0 auto}
+
+ul.lista{list-style:none; padding:0; margin:0; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--radius)}
+ul.lista li{padding:13px 18px; border-bottom:1px solid var(--grid); font-size:.9rem}
+ul.lista li:last-child{border-bottom:none}
+ul.lista li::before{content:"▸"; color:var(--muted); margin-right:10px}
+
+.analise p{margin:0 0 14px; font-size:.97rem}
+.analise p:last-child{margin-bottom:0}
+.analise{background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px}
+
+.news{list-style:none; padding:0; margin:0}
+.news li{background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px 18px; margin-bottom:9px}
+.news a{text-decoration:none; font-size:.92rem; font-weight:500}
+.news a:hover{text-decoration:underline}
+.news .meta{color:var(--muted); font-size:.72rem; margin-top:4px}
+
+footer{margin-top:44px; padding-top:22px; border-top:1px solid var(--grid);
+  color:var(--muted); font-size:.76rem}
+footer p{margin:0 0 7px}
+.aviso{font-style:italic; opacity:.85}
+.vazio{color:var(--muted); font-size:.88rem; padding:18px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>Macro &amp; Commodities Briefing</h1>
+      <p class="sub">Collected, analysed and published automatically</p>
+    </div>
+    <a class="lang" href="../">Português</a>
+  </header>
+
+  <section class="hero">
+    <p class="manchete">Cotton advances 5.02%</p>
+    <p class="resumo">3 of the tracked assets closed higher and 1 lower. The PTAX dollar settled at R$ 5.5840 (+1.26% on the day).</p>
+    <div class="placar">7 up · 2 down · 0 flat</div>
+  </section>
+
+  <h2>FX and macro</h2>
+  <div class="tiles"><div class="tile"><div class="rot">US Dollar (PTAX ask)</div><div class="val">5.5840<span class="un">R$</span></div><div class="delta"><span class="up">▲ 1.26%</span></div><div class="ref">Data as of Nov 10, 2026</div></div><div class="tile"><div class="rot">Euro (ask)</div><div class="val">6.2317<span class="un">R$</span></div><div class="delta"><span class="up">▲ 0.93%</span></div><div class="ref">Data as of Nov 10, 2026</div></div><div class="tile"><div class="rot">Selic rate (target)</div><div class="val">13.75<span class="un">% a.a.</span></div><div class="delta"><span class="flat">■ 0.00 pp</span></div><div class="ref">Data as of Nov 11, 2026</div></div><div class="tile"><div class="rot">IPCA (monthly)</div><div class="val">0.82<span class="un">%</span></div><div class="delta"><span class="up">▲ 1.14 pp</span></div><div class="ref">Data as of Sep 01, 2026</div></div></div>
+
+  <h2>Commodities</h2>
+  <div class="tbl-wrap"><table><thead><tr><th>Asset</th><th>Last</th><th>Day</th><th>Week</th><th>Month</th><th>60 sessions</th></tr></thead><tbody><tr><td class="ativo">Soybeans</td><td>1,226.25<span class="un-cell">¢/bushel</span></td><td><span class="up">▲ 0.14%</span></td><td><span class="up">▲ 2.77%</span></td><td><span class="down">▼ 4.78%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,20.3 4.9,20.5 6.8,19.8 8.7,21.3 10.6,19.3 12.5,15.0 14.4,14.7 16.3,11.4 18.2,11.6 20.1,6.5 22.0,7.3 23.9,6.6 25.8,8.6 27.7,7.2 29.6,8.3 31.5,5.0 33.4,10.8 35.3,10.0 37.2,4.5 39.1,4.2 41.0,4.3 42.9,7.0 44.8,3.0 46.7,3.4 48.6,4.6 50.5,4.7 52.4,4.5 54.3,9.5 56.2,7.9 58.1,8.7 59.9,10.2 61.8,11.1 63.7,10.7 65.6,7.1 67.5,8.0 69.4,9.6 71.3,8.9 73.2,9.6 75.1,10.2 77.0,11.3 78.9,13.6 80.8,13.9 82.7,15.2 84.6,16.0 86.5,16.5 88.4,15.2 90.3,14.7 92.2,17.2 94.1,19.1 96.0,19.9 97.9,20.7 99.8,20.3 101.7,23.1 103.6,23.4 105.5,25.0 107.4,27.0 109.3,25.7 111.2,26.8 113.1,19.9 115.0,19.6" fill="none" stroke="var(--down-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="19.6" r="2.5" fill="var(--down-mark)"/></svg></td></tr><tr><td class="ativo">Corn</td><td>446.50<span class="un-cell">¢/bushel</span></td><td><span class="down">▼ 0.56%</span></td><td><span class="up">▲ 0.51%</span></td><td><span class="down">▼ 7.56%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,19.2 4.9,17.9 6.8,16.7 8.7,14.9 10.6,12.8 12.5,9.7 14.4,10.6 16.3,10.2 18.2,9.5 20.1,8.0 22.0,8.6 23.9,9.4 25.8,10.2 27.7,10.4 29.6,11.2 31.5,9.7 33.4,10.6 35.3,10.2 37.2,4.7 39.1,5.0 41.0,5.9 42.9,6.6 44.8,3.0 46.7,4.4 48.6,6.2 50.5,6.6 52.4,6.4 54.3,7.6 56.2,7.9 58.1,12.8 59.9,12.4 61.8,13.5 63.7,13.6 65.6,11.1 67.5,12.5 69.4,12.9 71.3,17.6 73.2,16.9 75.1,16.9 77.0,17.4 78.9,18.0 80.8,18.9 82.7,20.6 84.6,21.7 86.5,21.4 88.4,22.1 90.3,23.1 92.2,23.4 94.1,24.8 96.0,24.1 97.9,24.2 99.8,25.0 101.7,24.9 103.6,26.2 105.5,25.8 107.4,26.8 109.3,26.5 111.2,27.0 113.1,24.7 115.0,25.3" fill="none" stroke="var(--down-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="25.3" r="2.5" fill="var(--down-mark)"/></svg></td></tr><tr><td class="ativo">Wheat</td><td>596.25<span class="un-cell">¢/bushel</span></td><td><span class="up">▲ 0.59%</span></td><td><span class="down">▼ 0.38%</span></td><td><span class="down">▼ 11.31%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,14.6 4.9,14.3 6.8,14.5 8.7,14.4 10.6,13.9 12.5,7.9 14.4,6.3 16.3,3.0 18.2,4.4 20.1,3.4 22.0,4.6 23.9,7.2 25.8,9.8 27.7,7.9 29.6,10.5 31.5,8.9 33.4,11.0 35.3,11.0 37.2,8.2 39.1,7.9 41.0,8.4 42.9,10.1 44.8,8.4 46.7,9.7 48.6,10.8 50.5,11.0 52.4,11.5 54.3,13.5 56.2,13.0 58.1,15.2 59.9,14.3 61.8,14.3 63.7,13.0 65.6,11.4 67.5,13.8 69.4,14.2 71.3,15.9 73.2,15.7 75.1,16.1 77.0,15.6 78.9,16.0 80.8,17.3 82.7,18.0 84.6,19.6 86.5,21.6 88.4,22.1 90.3,22.0 92.2,23.2 94.1,24.0 96.0,25.5 97.9,24.9 99.8,24.9 101.7,24.5 103.6,25.4 105.5,25.6 107.4,25.5 109.3,26.6 111.2,27.0 113.1,26.4 115.0,25.9" fill="none" stroke="var(--down-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="25.9" r="2.5" fill="var(--down-mark)"/></svg></td></tr><tr><td class="ativo">Coffee (Arabica)</td><td>264.00<span class="un-cell">¢/lb</span></td><td><span class="down">▼ 2.73%</span></td><td><span class="down">▼ 5.63%</span></td><td><span class="down">▼ 9.15%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,6.9 4.9,6.0 6.8,7.0 8.7,3.0 10.6,4.3 12.5,7.3 14.4,10.6 16.3,9.7 18.2,10.1 20.1,10.5 22.0,13.4 23.9,14.3 25.8,14.3 27.7,15.5 29.6,15.4 31.5,16.2 33.4,16.5 35.3,17.9 37.2,19.5 39.1,20.3 41.0,21.4 42.9,20.6 44.8,24.4 46.7,25.2 48.6,24.5 50.5,24.6 52.4,23.9 54.3,21.8 56.2,21.6 58.1,21.4 59.9,21.9 61.8,21.8 63.7,21.0 65.6,18.5 67.5,20.9 69.4,21.7 71.3,22.2 73.2,21.4 75.1,20.9 77.0,19.8 78.9,20.5 80.8,18.2 82.7,16.1 84.6,17.0 86.5,16.0 88.4,16.8 90.3,17.8 92.2,19.2 94.1,20.7 96.0,22.2 97.9,22.5 99.8,22.1 101.7,21.1 103.6,22.8 105.5,23.7 107.4,24.2 109.3,23.6 111.2,25.0 113.1,25.4 115.0,27.0" fill="none" stroke="var(--down-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="27.0" r="2.5" fill="var(--down-mark)"/></svg></td></tr><tr><td class="ativo">Sugar (No. 11)</td><td>18.24<span class="un-cell">¢/lb</span></td><td><span class="up">▲ 0.83%</span></td><td><span class="down">▼ 1.25%</span></td><td><span class="down">▼ 12.52%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,25.3 4.9,25.4 6.8,24.9 8.7,24.6 10.6,27.0 12.5,25.0 14.4,21.3 16.3,25.2 18.2,23.6 20.1,20.2 22.0,18.1 23.9,22.0 25.8,22.0 27.7,21.8 29.6,20.0 31.5,17.9 33.4,21.5 35.3,21.5 37.2,22.8 39.1,22.6 41.0,26.1 42.9,26.4 44.8,25.7 46.7,25.0 48.6,24.0 50.5,25.1 52.4,25.6 54.3,25.8 56.2,23.6 58.1,24.8 59.9,16.6 61.8,10.5 63.7,5.5 65.6,4.9 67.5,4.9 69.4,9.1 71.3,8.5 73.2,4.7 75.1,3.1 77.0,4.8 78.9,3.0 80.8,4.7 82.7,6.5 84.6,6.8 86.5,7.2 88.4,9.2 90.3,8.5 92.2,15.6 94.1,15.0 96.0,14.1 97.9,13.3 99.8,14.0 101.7,15.9 103.6,20.4 105.5,19.5 107.4,19.0 109.3,21.0 111.2,21.2 113.1,21.9 115.0,21.0" fill="none" stroke="var(--down-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="21.0" r="2.5" fill="var(--down-mark)"/></svg></td></tr><tr><td class="ativo">Cotton</td><td>82.64<span class="un-cell">¢/lb</span></td><td><span class="up">▲ 5.02%</span></td><td><span class="up">▲ 5.80%</span></td><td><span class="up">▲ 2.53%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,9.4 4.9,9.4 6.8,9.3 8.7,8.7 10.6,9.3 12.5,8.3 14.4,3.9 16.3,5.4 18.2,3.0 20.1,5.3 22.0,10.2 23.9,14.3 25.8,15.6 27.7,15.3 29.6,13.8 31.5,12.6 33.4,15.7 35.3,18.0 37.2,17.4 39.1,18.3 41.0,21.1 42.9,22.4 44.8,19.1 46.7,19.3 48.6,20.4 50.5,19.6 52.4,20.4 54.3,20.2 56.2,25.5 58.1,26.0 59.9,27.0 61.8,25.5 63.7,22.8 65.6,22.3 67.5,23.9 69.4,24.0 71.3,18.2 73.2,18.1 75.1,18.2 77.0,18.0 78.9,18.8 80.8,18.9 82.7,18.7 84.6,17.7 86.5,16.4 88.4,17.8 90.3,18.6 92.2,20.2 94.1,21.5 96.0,21.4 97.9,20.9 99.8,21.8 101.7,22.1 103.6,22.9 105.5,21.5 107.4,20.6 109.3,20.1 111.2,20.5 113.1,20.7 115.0,15.3" fill="none" stroke="var(--up-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="15.3" r="2.5" fill="var(--up-mark)"/></svg></td></tr><tr><td class="ativo">Live Cattle (CME)</td><td>219.20<span class="un-cell">¢/lb</span></td><td><span class="up">▲ 1.39%</span></td><td><span class="up">▲ 0.48%</span></td><td><span class="down">▼ 2.57%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,9.5 4.9,11.3 6.8,11.4 8.7,11.7 10.6,15.3 12.5,17.6 14.4,17.2 16.3,15.0 18.2,16.2 20.1,14.5 22.0,24.7 23.9,27.0 25.8,22.1 27.7,23.7 29.6,18.9 31.5,20.3 33.4,17.9 35.3,15.7 37.2,12.7 39.1,14.5 41.0,17.2 42.9,20.5 44.8,20.2 46.7,14.2 48.6,16.8 50.5,14.3 52.4,16.5 54.3,16.7 56.2,18.4 58.1,18.6 59.9,16.9 61.8,16.2 63.7,16.7 65.6,18.6 67.5,13.9 69.4,13.5 71.3,13.1 73.2,9.5 75.1,9.7 77.0,9.9 78.9,10.7 80.8,8.3 82.7,6.4 84.6,6.5 86.5,4.2 88.4,3.0 90.3,3.8 92.2,3.7 94.1,3.5 96.0,3.5 97.9,6.6 99.8,6.7 101.7,10.6 103.6,15.7 105.5,17.5 107.4,17.7 109.3,22.0 111.2,22.4 113.1,19.9 115.0,16.3" fill="none" stroke="var(--down-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="16.3" r="2.5" fill="var(--down-mark)"/></svg></td></tr><tr><td class="ativo">WTI Crude Oil</td><td>87.41<span class="un-cell">US$/barrel</span></td><td><span class="up">▲ 1.59%</span></td><td><span class="down">▼ 0.81%</span></td><td><span class="down">▼ 6.75%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,23.3 4.9,21.3 6.8,22.1 8.7,24.2 10.6,26.9 12.5,27.0 14.4,25.7 16.3,25.8 18.2,23.4 20.1,18.9 22.0,18.1 23.9,17.8 25.8,17.6 27.7,16.0 29.6,12.9 31.5,6.4 33.4,8.9 35.3,7.5 37.2,3.0 39.1,6.5 41.0,7.0 42.9,8.6 44.8,13.2 46.7,14.4 48.6,16.9 50.5,14.4 52.4,16.6 54.3,16.5 56.2,19.7 58.1,18.7 59.9,16.2 61.8,18.0 63.7,19.7 65.6,19.7 67.5,20.8 69.4,17.6 71.3,17.2 73.2,15.3 75.1,14.9 77.0,13.9 78.9,11.0 80.8,7.5 82.7,5.2 84.6,7.1 86.5,11.8 88.4,9.5 90.3,5.6 92.2,7.1 94.1,9.0 96.0,6.1 97.9,6.9 99.8,4.7 101.7,12.5 103.6,12.9 105.5,21.0 107.4,18.6 109.3,18.3 111.2,22.3 113.1,23.1 115.0,21.7" fill="none" stroke="var(--down-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="21.7" r="2.5" fill="var(--down-mark)"/></svg></td></tr><tr><td class="ativo">Ibovespa</td><td>172,636.62<span class="un-cell">points</span></td><td><span class="up">▲ 0.76%</span></td><td><span class="up">▲ 3.03%</span></td><td><span class="down">▼ 16.29%</span></td><td><svg class="spark" width="118" height="30" viewBox="0 0 118 30" role="img" aria-hidden="true"><polyline points="3.0,26.3 4.9,26.6 6.8,25.7 8.7,25.7 10.6,24.0 12.5,23.5 14.4,22.0 16.3,22.0 18.2,21.7 20.1,21.4 22.0,20.4 23.9,19.2 25.8,16.2 27.7,16.2 29.6,16.2 31.5,15.0 33.4,15.9 35.3,14.5 37.2,15.1 39.1,16.0 41.0,15.4 42.9,16.0 44.8,15.7 46.7,16.1 48.6,15.4 50.5,14.9 52.4,15.8 54.3,16.8 56.2,17.1 58.1,17.4 59.9,16.9 61.8,15.5 63.7,15.1 65.6,12.3 67.5,4.2 69.4,4.8 71.3,5.6 73.2,4.6 75.1,3.0 77.0,4.2 78.9,4.4 80.8,5.6 82.7,5.0 84.6,5.2 86.5,3.4 88.4,4.4 90.3,5.7 92.2,5.2 94.1,20.9 96.0,21.4 97.9,24.0 99.8,25.0 101.7,25.7 103.6,27.0 105.5,25.9 107.4,26.6 109.3,25.4 111.2,23.3 113.1,23.8 115.0,23.1" fill="none" stroke="var(--down-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="115.0" cy="23.1" r="2.5" fill="var(--down-mark)"/></svg></td></tr></tbody></table></div>
+
+  <h2>Today's analysis</h2><div class="analise"><p>Close: Soybeans 1226.25 ¢/bushel (+0.14%), Corn 446.50 ¢/bushel (-0.56%), Wheat 596.25 ¢/bushel (+0.59%), Coffee (Arabica) 264.00 ¢/lb (-2.73%), Sugar (No. 11) 18.24 ¢/lb (+0.83%), Cotton 82.64 ¢/lb (+5.02%).</p><p>Macro: US Dollar (PTAX ask) 5.5840 R$, Euro (ask) 6.2317 R$, Selic rate (target) 13.75 % a.a., IPCA (monthly) 0.82 %.</p><p>Automated narrative generated without a language model — the figures are unchanged.</p></div>
+  <h2>Highlights</h2><ul class="lista"><li>Cotton: +5.02%</li><li>Coffee (Arabica): -2.73%</li><li>WTI Crude Oil: +1.59%</li><li>Live Cattle (CME): +1.39%</li></ul>
+  <h2>On the sector's radar</h2><ul class="news"><li><a href="https://www.canalrural.com.br/economia/maioria-no-qpc-previa-manutencao-da-selic-em-1375-em-novembro/" target="_blank" rel="noopener">Maioria no QPC previa manutenção da Selic em 13,75% em novembro</a><div class="meta">Canal Rural · 11/11 13:22</div></li><li><a href="https://www.canalrural.com.br/economia/juros-futuros-perdem-forca-de-queda-e-rondam-estabilidade/" target="_blank" rel="noopener">Juros futuros perdem força de queda e rondam estabilidade</a><div class="meta">Canal Rural · 11/11 12:57</div></li><li><a href="https://www.canalrural.com.br/economia/expectativa-de-alta-de-juros-nos-eua-faz-ibovespa-cair-e-dolar-subir/" target="_blank" rel="noopener">Expectativa de alta de juros nos EUA faz Ibovespa cair e dólar subir</a><div class="meta">Canal Rural · 11/11 11:50</div></li><li><a href="https://www.canalrural.com.br/agricultura/cafe/cafe-arabica-cai-em-nova-york-mas-dolar-impede-queda-maior-dos-precos-no-brasil/" target="_blank" rel="noopener">Café arábica cai em Nova York, mas dólar impede queda maior dos preços no Brasil</a><div class="meta">Canal Rural · 11/11 11:48</div></li><li><a href="https://g1.globo.com/economia/agronegocios/noticia/2026/11/11/brasil-nunca-produziu-tanta-carne-bovina-mas-brasileiro-come-cada-vez-menos-entenda-o-paradoxo.ghtml" target="_blank" rel="noopener">Brasil nunca produziu tanta carne bovina, mas brasileiro come cada vez menos; entenda o paradoxo</a><div class="meta">g1 Agronegócios · 11/11 08:00</div></li><li><a href="https://g1.globo.com/politica/noticia/2026/11/10/relator-atende-agronegocio-e-mp-que-renegocia-dividas-rurais-e-aprovada-na-camara.ghtml" target="_blank" rel="noopener">Relator atende agronegócio, e MP que renegocia dívidas rurais é aprovada na Câmara</a><div class="meta">g1 Agronegócios · 10/11 21:24</div></li><li><a href="https://g1.globo.com/economia/agronegocios/noticia/2026/11/10/eua-vao-usar-ia-para-revisar-dados-agricolas-apos-serie-de-erros-em-relatorios-que-influenciam-precos.ghtml" target="_blank" rel="noopener">EUA vão usar IA para revisar dados agrícolas após série de erros em relatórios que influenciam preços</a><div class="meta">g1 Agronegócios · 10/11 13:00</div></li><li><a href="https://g1.globo.com/economia/agronegocios/noticia/2026/11/10/brasil-bateu-recorde-de-exportacao-de-frango-em-outubro-mesmo-com-caso-de-newcastle.ghtml" target="_blank" rel="noopener">Brasil bateu recorde de exportação de frango em outubro mesmo com caso de Newcastle</a><div class="meta">g1 Agronegócios · 10/11 11:58</div></li></ul>
+
+  <footer>
+    <p><strong>Sources:</strong> Central Bank of Brazil (SGS API) · Yahoo Finance · RSS from g1, Canal Rural, InfoMoney and Investing</p>
+    <p>Narrative generated by: deterministico (falha na IA) ·
+       Updated on: Nov 11, 2026</p>
+    <p class="aviso">Informational content, automatically generated. Not investment advice.</p>
+  </footer>
+
+</div>
+</body>
+</html>

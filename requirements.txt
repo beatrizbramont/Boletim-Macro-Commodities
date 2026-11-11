@@ -1,0 +1,4 @@
+requests>=2.32
+feedparser>=6.0
+truststore>=0.10
+python-dotenv>=1.0
