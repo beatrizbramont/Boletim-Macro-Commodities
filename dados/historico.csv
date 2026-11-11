@@ -6,8 +6,8 @@ data,categoria,chave,nome,valor,unidade,var_dia_pct,var_semana_pct,var_mes_pct
 2026-11-11,agro,ZC=F,Milho,448.7500,¢/bushel,-0.0557,1.0129,-7.0911
 2026-11-11,agro,ZS=F,Soja,1230.5000,¢/bushel,0.4900,3.1217,-4.4457
 2026-11-11,agro,ZW=F,Trigo,600.7500,¢/bushel,1.3496,0.3759,-10.6359
-2026-11-11,energia,CL=F,Petróleo WTI,86.4000,US$/barril,0.4184,-1.9519,-7.8302
-2026-11-11,indice,^BVSP,Ibovespa,172292.4375,pontos,0.5576,2.8219,-16.4521
+2026-11-11,energia,CL=F,Petróleo WTI,86.2600,US$/barril,0.2557,-2.1108,-7.9795
+2026-11-11,indice,^BVSP,Ibovespa,172441.7344,pontos,0.6448,2.9110,-16.3797
 2026-11-11,macro,eur_brl,Euro (venda),6.1706,R$,-0.9805,,10.0066
 2026-11-11,macro,ipca,IPCA (mês),0.82,%,,,
 2026-11-11,macro,selic,Selic (meta),13.75,% a.a.,,,
