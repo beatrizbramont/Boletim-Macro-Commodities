@@ -120,6 +120,33 @@ def testar_conexao():
 # Chamadas aos provedores
 # ---------------------------------------------------------------------------
 
+def _erro_da_api(resposta):
+    """Mensagem de erro do Google, não o texto genérico do status HTTP.
+
+    `raise_for_status()` diz apenas "400 Client Error" e descarta o corpo —
+    mas é no corpo que vem o motivo ("API key not valid", "Unknown name
+    thinkingConfig", etc.). Sem isso, diagnosticar exige adivinhação.
+    """
+    try:
+        erro = resposta.json().get("error", {})
+        detalhe = erro.get("message") or str(erro)
+    except ValueError:
+        detalhe = resposta.text[:300]
+    return f"HTTP {resposta.status_code}: {detalhe[:300]}"
+
+
+def _post_gemini(modelo, payload):
+    return rede.sessao().post(
+        URL_GEMINI.format(modelo=modelo),
+        headers={
+            "x-goog-api-key": os.environ["GEMINI_API_KEY"],
+            "Content-Type": "application/json",
+        },
+        json=payload,
+        timeout=90,
+    )
+
+
 def _chamar_gemini(prompt, max_tokens, json_estrito):
     modelo = os.getenv("GEMINI_MODELO") or "gemini-2.5-flash"
     config_geracao = {
@@ -138,21 +165,24 @@ def _chamar_gemini(prompt, max_tokens, json_estrito):
         "generationConfig": config_geracao,
     }
 
-    resposta = rede.sessao().post(
-        URL_GEMINI.format(modelo=modelo),
-        headers={
-            "x-goog-api-key": os.environ["GEMINI_API_KEY"],
-            "Content-Type": "application/json",
-        },
-        json=payload,
-        timeout=90,
-    )
-    resposta.raise_for_status()
-    corpo = resposta.json()
+    resposta = _post_gemini(modelo, payload)
 
+    # Nem todo modelo aceita thinkingConfig; quando não aceita, a resposta é
+    # 400 reclamando do campo. Vale mais repetir sem ele do que perder o dia.
+    if resposta.status_code == 400 and "thinking" in resposta.text.lower():
+        log.warning("%s não aceita thinkingConfig — repetindo sem o campo", modelo)
+        config_geracao.pop("thinkingConfig", None)
+        resposta = _post_gemini(modelo, payload)
+
+    if not resposta.ok:
+        raise RuntimeError(f"Gemini ({modelo}) recusou — {_erro_da_api(resposta)}")
+
+    corpo = resposta.json()
     candidatos = corpo.get("candidates") or []
     if not candidatos:
-        raise RuntimeError(f"Gemini não retornou candidatos: {str(corpo)[:200]}")
+        motivo = corpo.get("promptFeedback", {}).get("blockReason", "sem motivo")
+        raise RuntimeError(f"Gemini não retornou candidatos (bloqueio: {motivo})")
+
     partes = candidatos[0].get("content", {}).get("parts") or []
     texto = "".join(p.get("text", "") for p in partes)
     if not texto.strip():
@@ -176,7 +206,8 @@ def _chamar_cloudflare(prompt, max_tokens, json_estrito):
         },
         timeout=90,
     )
-    resposta.raise_for_status()
+    if not resposta.ok:
+        raise RuntimeError(f"Cloudflare ({modelo}) recusou — {_erro_da_api(resposta)}")
     corpo = resposta.json()
     if not corpo.get("success", True):
         raise RuntimeError(f"Cloudflare recusou: {corpo.get('errors')}")
