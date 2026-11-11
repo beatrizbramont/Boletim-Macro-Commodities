@@ -20,6 +20,9 @@ import json
 import logging
 import os
 import re
+import time
+
+import requests
 
 from . import rede
 
@@ -34,6 +37,14 @@ except ImportError:  # pragma: no cover
 
 URL_GEMINI = "https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
 URL_CLOUDFLARE = "https://api.cloudflare.com/client/v4/accounts/{conta}/ai/run/{modelo}"
+
+# Quantos modelos da fila tentar antes de desistir e cair na narrativa
+# determinística. Três cobre o caso de o preferido estar lotado sem fazer o
+# workflow demorar demais quando a API inteira está instável.
+MAX_MODELOS = 3
+
+# Modelos sob carga demoram para o primeiro byte; 90s se mostrou curto.
+TIMEOUT_GERACAO = 120
 
 ESQUEMA = {
     "type": "object",
@@ -145,12 +156,17 @@ def _post_gemini(modelo, payload):
             "Content-Type": "application/json",
         },
         json=payload,
-        timeout=90,
+        timeout=TIMEOUT_GERACAO,
     )
 
 
-# Modelo descoberto nesta execução — evita repetir a busca para cada idioma.
-_modelo_descoberto = None
+# Modelos descobertos nesta execução, em ordem de preferência — evita
+# repetir a busca a cada idioma.
+_modelos_viaveis = None
+
+# Status que valem nova tentativa no mesmo modelo: são congestionamento ou
+# instabilidade passageira do lado do Google, não erro do nosso pedido.
+TRANSITORIOS = (429, 500, 502, 503, 504)
 
 # Termos que marcam variantes que não queremos escolher sozinhos: são
 # instáveis, caras ou servem a outro propósito.
@@ -185,16 +201,20 @@ def _pontuar(nome):
     return pontos
 
 
-def _descobrir_modelo():
-    """Pergunta ao Google quais modelos a chave pode usar e escolhe um.
+def _descobrir_modelos():
+    """Pergunta ao Google quais modelos a chave pode usar, em ordem de preferência.
 
-    O Google aposenta modelos para chaves novas sem aviso — foi assim que o
-    gemini-2.5-flash parou de responder. Descobrir em tempo de execução custa
-    uma requisição e evita que o boletim caia toda vez que isso se repetir.
+    Devolvemos a lista inteira, e não só o primeiro colocado: o melhor modelo
+    é também o mais concorrido, e quando ele responde 503 por excesso de
+    demanda o segundo da fila costuma atender na hora.
+
+    O Google também aposenta modelos para chaves novas sem aviso — foi assim
+    que o gemini-2.5-flash parou de responder. Descobrir em tempo de execução
+    custa uma requisição e evita quebrar na próxima descontinuação.
     """
-    global _modelo_descoberto
-    if _modelo_descoberto:
-        return _modelo_descoberto
+    global _modelos_viaveis
+    if _modelos_viaveis:
+        return _modelos_viaveis
 
     resposta = rede.sessao().get(
         "https://generativelanguage.googleapis.com/v1beta/models",
@@ -217,21 +237,84 @@ def _descobrir_modelo():
         raise RuntimeError(f"nenhum modelo utilizável entre {len(candidatos)} "
                            f"retornados pela API")
 
-    _modelo_descoberto = viaveis[0].removeprefix("models/")
-    log.info("modelo descoberto automaticamente: %s (entre %d candidatos)",
-             _modelo_descoberto, len(viaveis))
-    return _modelo_descoberto
+    _modelos_viaveis = [m.removeprefix("models/") for m in viaveis]
+    log.info("modelos disponíveis (%d): %s", len(_modelos_viaveis),
+             ", ".join(_modelos_viaveis[:4]))
+    return _modelos_viaveis
+
+
+def _ler_resposta(resposta, modelo):
+    """Extrai o texto de uma resposta bem-sucedida do Gemini."""
+    corpo = resposta.json()
+    candidatos = corpo.get("candidates") or []
+    if not candidatos:
+        motivo = corpo.get("promptFeedback", {}).get("blockReason", "sem motivo")
+        raise RuntimeError(f"{modelo} não retornou candidatos (bloqueio: {motivo})")
+
+    partes = candidatos[0].get("content", {}).get("parts") or []
+    texto = "".join(p.get("text", "") for p in partes)
+    if not texto.strip():
+        motivo = candidatos[0].get("finishReason", "desconhecido")
+        raise RuntimeError(f"{modelo} retornou texto vazio (finishReason={motivo})")
+    return texto
+
+
+def _tentar_modelo(modelo, payload, tentativas=3):
+    """Chama um modelo, insistindo enquanto o erro for passageiro.
+
+    Devolve (texto, None) em caso de sucesso e (None, motivo) quando vale a
+    pena passar para o próximo modelo da fila.
+    """
+    for tentativa in range(1, tentativas + 1):
+        try:
+            resposta = _post_gemini(modelo, payload)
+        except requests.exceptions.RequestException as e:
+            # Timeout e queda de conexão contam como instabilidade: o modelo
+            # mais concorrido costuma estourar o tempo justamente sob carga.
+            if tentativa < tentativas:
+                espera = 4 * tentativa
+                log.warning("%s: %s — nova tentativa em %ds",
+                            modelo, type(e).__name__, espera)
+                time.sleep(espera)
+                continue
+            return None, f"{type(e).__name__} após {tentativas} tentativas"
+
+        if resposta.ok:
+            return _ler_resposta(resposta, modelo), None
+
+        # Nem todo modelo aceita thinkingConfig; quando não aceita, responde
+        # 400 reclamando do campo. Repetir sem ele é melhor que desistir.
+        if resposta.status_code == 400 and "thinking" in resposta.text.lower():
+            log.warning("%s não aceita thinkingConfig — repetindo sem o campo", modelo)
+            payload["generationConfig"].pop("thinkingConfig", None)
+            continue
+
+        if resposta.status_code in TRANSITORIOS and tentativa < tentativas:
+            espera = 4 * tentativa
+            log.warning("%s sobrecarregado (HTTP %d) — nova tentativa em %ds",
+                        modelo, resposta.status_code, espera)
+            time.sleep(espera)
+            continue
+
+        return None, _erro_da_api(resposta)
+
+    return None, "tentativas esgotadas"
 
 
 def _chamar_gemini(prompt, max_tokens, json_estrito):
-    # Sem GEMINI_MODELO definido, perguntamos à API qual usar. Fixar um nome
-    # no código foi exatamente o que quebrou quando o Google aposentou o
-    # gemini-2.5-flash para chaves novas.
-    modelo = os.getenv("GEMINI_MODELO") or _modelo_descoberto or _descobrir_modelo()
+    """Gera texto, descendo a fila de modelos enquanto for preciso.
+
+    Um modelo pode estar aposentado (404) ou simplesmente lotado (503). Em
+    qualquer dos casos, insistir um pouco e então passar ao próximo da lista
+    é mais barato do que publicar o boletim sem análise.
+    """
+    fixo = os.getenv("GEMINI_MODELO")
+    modelos = [fixo] if fixo else _descobrir_modelos()
+
     config_geracao = {
         "temperature": 0.4,
         "maxOutputTokens": max_tokens,
-        # O 2.5 Flash "pensa" por padrão e esse raciocínio consome o teto de
+        # O flash "pensa" por padrão e esse raciocínio consome o teto de
         # saída — sem zerar o orçamento, respostas longas voltam truncadas.
         "thinkingConfig": {"thinkingBudget": 0},
     }
@@ -239,47 +322,31 @@ def _chamar_gemini(prompt, max_tokens, json_estrito):
         config_geracao["responseMimeType"] = "application/json"
         config_geracao["responseSchema"] = ESQUEMA
 
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": config_geracao,
-    }
+    problemas = []
+    for modelo in modelos[:MAX_MODELOS]:
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": dict(config_geracao),
+        }
+        texto, motivo = _tentar_modelo(modelo, payload)
+        if texto:
+            if problemas:
+                log.info("%s respondeu após %d modelo(s) indisponível(is)",
+                         modelo, len(problemas))
+            return texto
+        log.warning("descartando %s: %s", modelo, motivo)
+        problemas.append(f"{modelo}: {motivo}")
 
-    resposta = _post_gemini(modelo, payload)
-
-    # Nem todo modelo aceita thinkingConfig; quando não aceita, a resposta é
-    # 400 reclamando do campo. Vale mais repetir sem ele do que perder o dia.
-    if resposta.status_code == 400 and "thinking" in resposta.text.lower():
-        log.warning("%s não aceita thinkingConfig — repetindo sem o campo", modelo)
-        config_geracao.pop("thinkingConfig", None)
-        resposta = _post_gemini(modelo, payload)
-
-    # Modelo aposentado ou inexistente: descobrir um vivo e repetir uma vez.
-    if resposta.status_code == 404:
-        log.warning("modelo %s indisponível (%s) — procurando substituto",
-                    modelo, _erro_da_api(resposta))
-        substituto = _descobrir_modelo()
-        if substituto != modelo:
-            modelo = substituto
-            resposta = _post_gemini(modelo, payload)
-
-    if not resposta.ok:
-        raise RuntimeError(f"Gemini ({modelo}) recusou — {_erro_da_api(resposta)}")
-
-    corpo = resposta.json()
-    candidatos = corpo.get("candidates") or []
-    if not candidatos:
-        motivo = corpo.get("promptFeedback", {}).get("blockReason", "sem motivo")
-        raise RuntimeError(f"Gemini não retornou candidatos (bloqueio: {motivo})")
-
-    partes = candidatos[0].get("content", {}).get("parts") or []
-    texto = "".join(p.get("text", "") for p in partes)
-    if not texto.strip():
-        motivo = candidatos[0].get("finishReason", "desconhecido")
-        raise RuntimeError(f"Gemini retornou texto vazio (finishReason={motivo})")
-    return texto
+    raise RuntimeError("nenhum modelo respondeu — " + " | ".join(problemas))
 
 
 def _chamar_cloudflare(prompt, max_tokens, json_estrito):
+    # `json_estrito` é aceito para manter a assinatura dos provedores igual,
+    # mas o Workers AI não tem equivalente ao responseSchema do Gemini: o
+    # formato é pedido no próprio prompt e `_extrair_json` tolera a resposta
+    # vir embrulhada em texto ou cercada por crases.
+    del json_estrito
+
     modelo = os.getenv("CLOUDFLARE_MODELO") or "@cf/meta/llama-3.1-8b-instruct"
     url = URL_CLOUDFLARE.format(
         conta=os.environ["CLOUDFLARE_ACCOUNT_ID"], modelo=modelo
