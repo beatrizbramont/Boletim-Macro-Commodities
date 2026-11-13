@@ -26,14 +26,14 @@ data,categoria,chave,nome,valor,unidade,var_dia_pct,var_semana_pct,var_mes_pct
 2026-11-12,macro,selic,Selic (meta),13.75,% a.a.,,,
 2026-11-12,macro,usd_brl,Dólar (PTAX venda),5.6143,R$,0.9657,,12.5291
 2026-11-13,agro,CT=F,Algodão,79.0200,¢/libra,0.4449,-0.1138,-2.0332
-2026-11-13,agro,KC=F,Café (Arábica),274.3500,¢/libra,-2.0878,-2.0179,-7.9517
-2026-11-13,agro,LE=F,Boi gordo (CME),225.5000,¢/libra,3.0151,5.3492,0.7146
+2026-11-13,agro,KC=F,Café (Arábica),274.0000,¢/libra,-2.2127,-2.1429,-8.0691
+2026-11-13,agro,LE=F,Boi gordo (CME),224.9250,¢/libra,2.7524,5.0806,0.4578
 2026-11-13,agro,SB=F,Açúcar (nº 11),18.4000,¢/libra,0.9879,0.8772,-11.7083
-2026-11-13,agro,ZC=F,Milho,445.2500,¢/bushel,0.6215,0.8494,-7.3843
-2026-11-13,agro,ZS=F,Soja,1232.2500,¢/bushel,0.4279,3.6375,-3.5232
-2026-11-13,agro,ZW=F,Trigo,592.7500,¢/bushel,1.4549,0.2537,-11.9569
-2026-11-13,energia,CL=F,Petróleo WTI,88.6900,US$/barril,-0.0563,-2.3560,-6.7305
-2026-11-13,indice,^BVSP,Ibovespa,172304.6406,pontos,0.5724,2.2586,-16.7160
+2026-11-13,agro,ZC=F,Milho,446.0000,¢/bushel,0.7910,1.0193,-7.2283
+2026-11-13,agro,ZS=F,Soja,1232.7500,¢/bushel,0.4686,3.6796,-3.4840
+2026-11-13,agro,ZW=F,Trigo,593.5000,¢/bushel,1.5832,0.3805,-11.8455
+2026-11-13,energia,CL=F,Petróleo WTI,88.7700,US$/barril,0.0338,-2.2680,-6.6463
+2026-11-13,indice,^BVSP,Ibovespa,172281.3750,pontos,0.5588,2.2447,-16.7272
 2026-11-13,macro,eur_brl,Euro (venda),6.2334,R$,0.3235,,11.1281
 2026-11-13,macro,ipca,IPCA (mês),0.14,%,,,
 2026-11-13,macro,selic,Selic (meta),13.75,% a.a.,,,
