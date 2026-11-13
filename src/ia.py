@@ -24,6 +24,7 @@ import time
 
 import requests
 
+from . import formato
 from . import rede
 
 log = logging.getLogger(__name__)
@@ -67,6 +68,7 @@ REGRAS INVIOLÁVEIS:
 - Não faça previsão de preço nem recomendação de compra ou venda.
 - Se um dado não estiver no briefing, não o mencione.
 - Ao citar um número, use exatamente o valor e a unidade fornecidos.
+- Reproduza os números exatamente como aparecem no briefing, inclusive a vírgula decimal e o ponto de milhar. Não os reformate para o padrão americano.
 
 Devolva JSON com:
 - "manchete": 1 frase (máx. 90 caracteres) com o fato mais relevante do dia.
@@ -82,6 +84,7 @@ NON-NEGOTIABLE RULES:
 - No price forecasts and no buy/sell recommendations.
 - If a figure is not in the briefing, do not mention it.
 - When citing a number, use exactly the value and unit provided.
+- Reproduce numbers exactly as they appear in the briefing, including the decimal point and thousands separator. Do not reformat them.
 
 Return JSON with:
 - "manchete": 1 sentence (max 90 characters) with the day's most relevant fact.
@@ -385,15 +388,15 @@ def _chamar(provedor, prompt, max_tokens=2048, json_estrito=False):
 # Briefing e parsing
 # ---------------------------------------------------------------------------
 
-def _pct(x):
-    return f"{x:+.2f}%" if x is not None else "n/d"
-
-
 def montar_briefing(contexto, idioma):
     """Transforma os dados coletados no texto que vai dentro do prompt."""
     pt = idioma == "pt"
     nome = "nome_pt" if pt else "nome_en"
     unidade = "unidade_pt" if pt else "unidade_en"
+    # Os números entram já na convenção do idioma: o modelo ecoa o que recebe,
+    # então é aqui que se decide se a manchete sai "5,6518" ou "5.6518".
+    num = lambda v, casas: formato.numero(v, casas, idioma)
+    pct = lambda v: formato.pct(v, idioma)
     linhas = []
 
     linhas.append(f"DATA: {contexto['data_ref']}")
@@ -401,24 +404,24 @@ def montar_briefing(contexto, idioma):
     linhas.append("\n[CÂMBIO E MACRO]" if pt else "\n[FX AND MACRO]")
     for d in contexto["macro"].values():
         linhas.append(
-            f"- {d[nome]}: {d['valor']:.{d['casas']}f} {d['unidade']}"
-            f" | dia {_pct(d['var_dia_pct'])} | mês {_pct(d['var_mes_pct'])}"
+            f"- {d[nome]}: {num(d['valor'], d['casas'])} {d['unidade']}"
+            f" | dia {pct(d['var_dia_pct'])} | mês {pct(d['var_mes_pct'])}"
             f" | ref {d['data']}"
         )
 
     linhas.append("\n[COMMODITIES]")
     for d in contexto["commodities"].values():
         linhas.append(
-            f"- {d[nome]}: {d['valor']:.2f} {d[unidade]}"
-            f" | dia {_pct(d['var_dia_pct'])}"
-            f" | semana {_pct(d['var_semana_pct'])}"
-            f" | mês {_pct(d['var_mes_pct'])}"
+            f"- {d[nome]}: {num(d['valor'], 2)} {d[unidade]}"
+            f" | dia {pct(d['var_dia_pct'])}"
+            f" | semana {pct(d['var_semana_pct'])}"
+            f" | mês {pct(d['var_mes_pct'])}"
         )
 
     if contexto.get("destaques"):
         linhas.append("\n[MAIORES VARIAÇÕES DO DIA]" if pt else "\n[LARGEST DAILY MOVES]")
         for d in contexto["destaques"]:
-            linhas.append(f"- {d[nome]}: {_pct(d['var_dia_pct'])}")
+            linhas.append(f"- {d[nome]}: {pct(d['var_dia_pct'])}")
 
     if contexto.get("noticias"):
         linhas.append("\n[MANCHETES DO SETOR]" if pt else "\n[SECTOR HEADLINES]")
@@ -468,6 +471,8 @@ def _narrativa_deterministica(contexto, idioma):
     pt = idioma == "pt"
     nome = "nome_pt" if pt else "nome_en"
     unidade = "unidade_pt" if pt else "unidade_en"
+    num = lambda v, casas: formato.numero(v, casas, idioma)
+    pct = lambda v: formato.pct(v, idioma)
 
     destaques_dia = contexto.get("destaques") or []
     # O placar vem de analise.py e cobre TODOS os ativos. Contar sobre os
@@ -487,7 +492,7 @@ def _narrativa_deterministica(contexto, idioma):
             if (lider.get("var_dia_pct") or 0) > 0
             else ("recua" if pt else "retreats")
         )
-        manchete = f"{lider[nome]} {direcao} {abs(lider['var_dia_pct']):.2f}%"
+        manchete = f"{lider[nome]} {direcao} {num(abs(lider['var_dia_pct']), 2)}%"
     else:
         manchete = "Boletim do dia" if pt else "Daily briefing"
 
@@ -498,8 +503,8 @@ def _narrativa_deterministica(contexto, idioma):
         )
         if dolar:
             resumo += (
-                f"O dólar PTAX encerrou a R$ {dolar['valor']:.4f} "
-                f"({_pct(dolar['var_dia_pct'])} no dia)."
+                f"O dólar PTAX encerrou a R$ {num(dolar['valor'], 4)} "
+                f"({pct(dolar['var_dia_pct'])} no dia)."
             )
     else:
         resumo = (
@@ -508,20 +513,20 @@ def _narrativa_deterministica(contexto, idioma):
         )
         if dolar:
             resumo += (
-                f"The PTAX dollar settled at R$ {dolar['valor']:.4f} "
-                f"({_pct(dolar['var_dia_pct'])} on the day)."
+                f"The PTAX dollar settled at R$ {num(dolar['valor'], 4)} "
+                f"({pct(dolar['var_dia_pct'])} on the day)."
             )
 
     paragrafos = []
     if contexto["commodities"]:
         corpo = ", ".join(
-            f"{d[nome]} {d['valor']:.2f} {d[unidade]} ({_pct(d['var_dia_pct'])})"
+            f"{d[nome]} {num(d['valor'], 2)} {d[unidade]} ({pct(d['var_dia_pct'])})"
             for d in list(contexto["commodities"].values())[:6]
         )
         paragrafos.append(("Fechamento: " if pt else "Close: ") + corpo + ".")
     if contexto["macro"]:
         corpo = ", ".join(
-            f"{d[nome]} {d['valor']:.{d['casas']}f} {d['unidade']}"
+            f"{d[nome]} {num(d['valor'], d['casas'])} {d['unidade']}"
             for d in contexto["macro"].values()
         )
         paragrafos.append(("Macro: " if pt else "Macro: ") + corpo + ".")
@@ -532,7 +537,7 @@ def _narrativa_deterministica(contexto, idioma):
     )
 
     destaques = [
-        f"{d[nome]}: {_pct(d['var_dia_pct'])}" for d in destaques_dia[:5]
+        f"{d[nome]}: {pct(d['var_dia_pct'])}" for d in destaques_dia[:5]
     ]
 
     return {

@@ -30,6 +30,7 @@ import html
 import logging
 
 from . import config
+from . import formato
 
 log = logging.getLogger(__name__)
 
@@ -148,7 +149,11 @@ a{color:inherit}
   line-height:1.6; font-variant-numeric:tabular-nums}
 
 /* ---------------- conteúdo ---------------- */
-.content{flex:1 1 auto; min-width:0; padding:46px 48px 64px; max-width:1100px}
+/* margin-inline:auto centraliza o bloco no espaço que sobra à direita da
+   barra quando a tela é mais larga que o max-width; sem isso ele encosta
+   à esquerda e abre um vão morto em monitores grandes. */
+.content{flex:1 1 auto; min-width:0; padding:46px 48px 64px; max-width:1100px;
+  margin-inline:auto}
 
 .lede{margin-bottom:44px}
 .lede .manchete{font-size:2.1rem; line-height:1.14; font-weight:680;
@@ -227,14 +232,7 @@ footer strong{color:var(--ink-2); font-weight:650}
 # Formatação
 # ---------------------------------------------------------------------------
 
-def _numero(valor, casas, idioma):
-    """Formata com separador de milhar; vírgula decimal em pt, ponto em en."""
-    if valor is None:
-        return "—"
-    texto = f"{valor:,.{casas}f}"
-    if idioma == "pt":
-        texto = texto.replace(",", "\x00").replace(".", ",").replace("\x00", ".")
-    return texto
+_numero = formato.numero
 
 
 def _data(d, idioma):
