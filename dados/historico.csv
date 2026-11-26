@@ -129,3 +129,16 @@ data,categoria,chave,nome,valor,unidade,var_dia_pct,var_semana_pct,var_mes_pct
 2026-11-25,macro,ipca,IPCA (mês),0.14,%,,,
 2026-11-25,macro,selic,Selic (meta),13.75,% a.a.,,,
 2026-11-25,macro,usd_brl,Dólar (PTAX venda),5.8825,R$,0.4302,,16.7557
+2026-11-26,agro,CT=F,Algodão,79.6500,¢/libra,0.6699,6.2425,0.7463
+2026-11-26,agro,KC=F,Café (Arábica),275.6500,¢/libra,2.6438,-1.8865,-8.4067
+2026-11-26,agro,LE=F,Boi gordo (CME),223.3250,¢/libra,-1.1399,1.6153,-2.8916
+2026-11-26,agro,SB=F,Açúcar (nº 11),18.3400,¢/libra,3.8505,1.6630,-3.9791
+2026-11-26,agro,ZC=F,Milho,439.7500,¢/bushel,1.3249,0.9759,-3.3516
+2026-11-26,agro,ZS=F,Soja,1244.0000,¢/bushel,0.8104,2.2396,0.2216
+2026-11-26,agro,ZW=F,Trigo,565.5000,¢/bushel,-0.7459,-0.7895,-8.1981
+2026-11-26,energia,CL=F,Petróleo WTI,84.9100,US$/barril,1.4699,2.0430,-15.0050
+2026-11-26,indice,^BVSP,Ibovespa,173434.3281,pontos,4.0492,3.5194,-15.4321
+2026-11-26,macro,eur_brl,Euro (venda),6.3041,R$,-2.1300,,11.7312
+2026-11-26,macro,ipca,IPCA (mês),0.14,%,,,
+2026-11-26,macro,selic,Selic (meta),13.75,% a.a.,,,
+2026-11-26,macro,usd_brl,Dólar (PTAX venda),5.7446,R$,-2.3442,,14.0322
